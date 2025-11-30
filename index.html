@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>CSS Tools & Equipment Guides</title>
+
+<!-- model-viewer (module) -->
 <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
 <!-- EmailJS SDK -->
-<script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
-<script type="text/javascript">
-   (function(){
-      emailjs.init("YOUR_EMAILJS_USER_ID"); // Replace with your EmailJS user ID
-   })();
-</script>
+<script src="https://cdn.emailjs.com/dist/email.min.js"></script>
 
 <style>
 /* =======================
@@ -28,93 +25,89 @@ img { max-width:100%; display:block; }
 ======================= */
 .navbar {
     display:flex; justify-content: space-between; align-items:center;
-    padding: 15px 25px; background: cyan; position: sticky; top:0; 
+    padding: 12px 18px; background: cyan; position: sticky; top:0; 
     z-index:1000;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
-.navbar .logo { font-size:1.5rem; font-weight:bold; color:#000; }
+.navbar .logo { font-size:1.25rem; font-weight:bold; color:#000; }
 
 /* MENU DEFAULT (DESKTOP) */
-.menu ul { display:flex; list-style:none; gap:15px; }
-.menu ul li a { padding:5px 10px; border-radius:5px; transition:0.3s; }
+.menu ul { display:flex; list-style:none; gap:12px; align-items:center; margin:0; padding:0; }
+.menu ul li a { display:inline-block; padding:6px 10px; border-radius:6px; transition:0.18s; color:#000; }
 .menu ul li a:hover { background:#00e5ff; color:#fff; }
 
-/* =======================
-   HAMBURGER (MOBILE)
-======================= */
-.hamburger { width:30px; height:22px; display:none; flex-direction:column; justify-content:space-between; cursor:pointer; }
-.hamburger span { height:4px; background:#000; border-radius:5px; transition:0.3s ease; }
+/* HAMBURGER (MOBILE) */
+.hamburger { width:30px; height:20px; display:none; flex-direction:column; justify-content:space-between; cursor:pointer; }
+.hamburger span { height:3px; background:#000; border-radius:4px; transition:0.25s ease; display:block; }
 .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px,6px); }
-.hamburger.open span:nth-child(2) { opacity:0; }
+.hamburger.open span:nth-child(2) { opacity:0; transform: translateX(-6px); }
 .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(6px,-6px); }
 
-/* =======================
-   MOBILE MENU DROPDOWN
-======================= */
+/* MOBILE MENU DROPDOWN */
 @media (max-width: 768px) {
-    .navbar { flex-direction: row; justify-content: space-between; align-items: center; padding:15px 20px; }
-    .hamburger { display:flex; margin-left:auto; }
+    .hamburger { display:flex; }
     .menu { width:100%; display:none; }
     .menu.active { display:block; }
-    .menu ul { flex-direction:column; background: cyan; padding:15px 0; text-align:center; gap:20px; }
+    .menu ul { flex-direction:column; background: cyan; padding:12px 0; text-align:center; gap:12px; margin:0; }
+    .menu ul li a { color:#000; padding:10px 15px; display:block; }
 }
 
-/* =======================
-   HERO SECTION
-======================= */
-.hero { text-align:center; padding:100px 20px; background: linear-gradient(120deg,#0f2027,#203a43,#2c5364); color:#fff; }
-.hero h1 { font-size:3rem; margin-bottom:20px; color:#00e5ff; }
-.hero p { font-size:1.2rem; max-width:700px; margin:0 auto 30px auto; }
-.hero .cta-btn { display:inline-block; padding:12px 25px; background:#00e5ff; color:#111; border-radius:8px; font-weight:bold; transition:0.3s; }
-.hero .cta-btn:hover { transform:scale(1.05); }
+/* HERO */
+.hero { text-align:center; padding:80px 16px; background: linear-gradient(120deg,#0f2027,#203a43,#2c5364); color:#fff; }
+.hero h1 { font-size:2.2rem; margin-bottom:14px; color:#00e5ff; }
+.hero p { font-size:1rem; max-width:700px; margin:0 auto 18px auto; }
+.hero .cta-btn { display:inline-block; padding:10px 18px; background:#00e5ff; color:#111; border-radius:8px; font-weight:bold; transition:0.2s; }
+.hero .cta-btn:hover { transform:scale(1.03); }
 
-/* =======================
-   FEATURES SECTION
-======================= */
-.features { display:flex; flex-wrap:wrap; justify-content:center; gap:30px; padding:60px 20px; max-width:1200px; margin:auto; }
-.feature-card { flex:1 1 300px; background:#fff; border-radius:20px; padding:25px; text-align:center; box-shadow:0 4px 15px rgba(0,0,0,0.2); transition: transform 0.3s; }
-.feature-card:hover { transform: scale(1.05); }
-.feature-card h3 { color:#00e5ff; margin-bottom:15px; }
-.feature-card p { font-size:0.95rem; color:#333; }
+/* FEATURES */
+.features { display:flex; flex-wrap:wrap; justify-content:center; gap:18px; padding:36px 16px; max-width:1200px; margin:0 auto; }
+.feature-card { flex:1 1 260px; background:#fff; border-radius:12px; padding:18px; text-align:center; box-shadow:0 6px 18px rgba(0,0,0,0.08); transition: transform 0.18s; position:relative; min-width:220px; }
+.feature-card:hover { transform: translateY(-6px); }
+.feature-card h3 { color:#00e5ff; margin-bottom:10px; font-size:1.05rem; }
+.feature-card p { font-size:0.95rem; color:#333; margin-bottom:14px; }
 
-/* =======================
-   3D MODELS SECTION
-======================= */
-.models-section { padding:60px 20px; max-width:1200px; margin:auto; }
-.models-section h2 { text-align:center; color:#00e5ff; margin-bottom:40px; }
-.model-wrapper { display:flex; flex-wrap:wrap; justify-content:center; gap:30px; text-align:center; }
-.model-card { background:#fff; border-radius:15px; padding:15px; box-shadow:0 4px 15px rgba(0,0,0,0.2); transition: transform 0.3s; width:300px; }
-.model-card:hover { transform: scale(1.05); }
-.model-card model-viewer { width:100%; height:300px; border-radius:10px; }
-.model-card .model-label { font-weight:bold; margin-top:10px; color:#00e5ff; }
-.model-card button, .model-card a { margin:5px 5px 0 5px; padding:6px 12px; border:none; border-radius:5px; cursor:pointer; background:#00e5ff; color:#fff; font-weight:bold; transition:0.3s; }
-.model-card button:hover, .model-card a:hover { transform: scale(1.05); }
+/* Speak button */
+.feature-actions { display:flex; justify-content:center; gap:8px; }
+.btn-speak {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:6px 10px; background:#00e5ff; color:#fff; border-radius:8px; border:none; cursor:pointer;
+  font-weight:600; font-size:0.9rem; transition:transform .12s;
+}
+.btn-speak:active { transform:scale(.98); }
+.btn-speak[aria-pressed="true"] { box-shadow:0 0 0 4px rgba(0,229,255,0.12); }
 
-/* =======================
-   FOOTER
-======================= */
-footer { text-align:center; padding:30px 20px; background:#111; color:#fff; }
+/* MODELS */
+.models-section { padding:36px 16px; max-width:1200px; margin:0 auto; }
+.models-section h2 { text-align:center; color:#00e5ff; margin-bottom:20px; }
+.model-wrapper { display:flex; flex-wrap:wrap; justify-content:center; gap:16px; }
+.model-card { background:#fff; border-radius:12px; padding:12px; box-shadow:0 6px 18px rgba(0,0,0,0.08); width:280px; text-align:center; }
+.model-card model-viewer { width:100%; height:220px; border-radius:8px; display:block; }
+.model-label { font-weight:700; margin-top:8px; color:#00e5ff; }
 
-/* =======================
-   CHAT SUPPORT STYLES
-======================= */
-#chat-container { position:fixed; bottom:20px; right:20px; z-index:10000; font-family: 'Inter', sans-serif; }
-#chat-button { background: linear-gradient(45deg, #00e5ff, #ff00ff); color:#111; padding:12px 20px; border-radius:50px; cursor:pointer; box-shadow:0 0 15px #00e5ff; transition: transform 0.3s ease; }
-#chat-button:hover { transform: scale(1.1); }
-#chat-box { display:none; width:300px; max-height:400px; background:#1a1a1a; color:#fff; border-radius:20px; box-shadow:0 0 20px #00e5ff; flex-direction:column; overflow:hidden; margin-top:10px; }
+/* CHAT / QR / FOOTER */
+#chat-container { position:fixed; bottom:18px; right:18px; z-index:10000; font-family: 'Inter', sans-serif; }
+#chat-button { background: linear-gradient(45deg, #00e5ff, #ff00ff); color:#111; padding:10px 14px; border-radius:40px; cursor:pointer; box-shadow:0 0 12px #00e5ff; }
+#chat-box { display:none; width:300px; max-height:360px; background:#1a1a1a; color:#fff; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,0.25); flex-direction:column; overflow:hidden; margin-top:10px; }
 #chat-header { background:#00e5ff; color:#111; padding:10px; font-weight:600; display:flex; justify-content:space-between; align-items:center; }
-#chat-close { cursor:pointer; }
-#chat-messages { padding:10px; flex:1; overflow-y:auto; }
-#chat-input { width:100%; padding:10px; border:none; outline:none; border-top:1px solid #555; border-radius:0 0 20px 20px; background:#222; color:#fff; }
+#chat-messages { padding:8px; flex:1; overflow:auto; }
+#chat-input { width:100%; padding:10px; border:none; outline:none; border-top:1px solid #333; background:#222; color:#fff; }
 
-/* =======================
-   QR MODAL STYLES
-======================= */
-#qr-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:3000; justify-content:center; align-items:center; }
-#qr-modal-content { background:#061221; padding:20px; border-radius:12px; text-align:center; color:#fff; max-width:400px; width:90%; }
-#qr-video { width:320px; height:320px; background:#000; margin:12px auto; border-radius:8px; }
-#qr-btn-close { padding:8px 12px; border:none; border-radius:6px; background:#111; color:#fff; cursor:pointer; margin-top:10px; }
-#qr-msg { margin-top:10px; color:#ffb3b3; font-weight:bold; }
+#qr-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:3000; justify-content:center; align-items:center; }
+#qr-modal-content { background:#061221; padding:18px; border-radius:10px; text-align:center; color:#fff; max-width:400px; width:92%; }
+#qr-video { width:300px; height:300px; background:#000; margin:8px auto; border-radius:8px; }
+#qr-msg { margin-top:8px; color:#ffb3b3; font-weight:700; }
+
+/* Footer */
+footer { text-align:center; padding:20px 12px; background:#111; color:#fff; margin-top:18px; }
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .hero { padding:60px 12px; }
+  .hero h1 { font-size:1.6rem; }
+  .features { padding:24px 12px; gap:12px; }
+  .feature-card { width:100%; max-width:420px; }
+  .model-card { width:100%; max-width:420px; }
+}
 </style>
 </head>
 <body>
@@ -123,13 +116,13 @@ footer { text-align:center; padding:30px 20px; background:#111; color:#fff; }
 <div class="navbar">
     <div class="logo">BTVTEd-CSS Community</div>
 
-    <div class="hamburger" id="hamburger">
+    <div class="hamburger" id="hamburger" aria-label="Open menu" role="button" tabindex="0">
         <span></span>
         <span></span>
         <span></span>
     </div>
 
-    <div class="menu" id="menu">
+    <nav class="menu" id="menu" aria-label="Main menu">
         <ul>
             <li><a href="#home">HOME</a></li>
             <li><a href="features.html" id="feature-link">FEATURES</a></li>
@@ -137,41 +130,69 @@ footer { text-align:center; padding:30px 20px; background:#111; color:#fff; }
             <li><a href="about.html">ABOUT</a></li>
             <li><a href="blog.html">BLOG</a></li>
         </ul>
-    </div>
+    </nav>
 </div>
 
 <!-- HERO SECTION -->
-<section class="hero" id="home">
-    <h1>Welcome to CSS Tools & Equipment Guides</h1>
-    <p>Explore interactive 3D models of computer components...</p>
+<section class="hero" id="home" aria-labelledby="hero-title">
+    <h1 id="hero-title">Welcome to CSS Tools & Equipment Guides</h1>
+    <p>Explore interactive 3D models of computer components and quick guides — now with spoken descriptions for features.</p>
     <a href="#models" class="cta-btn">Explore 3D Models</a>
 </section>
 
 <!-- FEATURES -->
-<section class="features" id="features">
-    <div class="feature-card"><h3>Interactive 3D Models</h3><p>Rotate, zoom...</p></div>
-    <div class="feature-card"><h3>Definitions & Guides</h3><p>Learn what each part does...</p></div>
-    <div class="feature-card"><h3>Mobile Friendly</h3><p>Access anywhere!</p></div>
+<section class="features" id="features" aria-labelledby="features-title">
+    <h2 id="features-title" style="position:absolute;left:-9999px;top:auto;">Features</h2>
+
+    <!-- Feature 1 -->
+    <article class="feature-card" data-feature-text="Interactive 3D Models. Rotate and zoom to examine components from every angle.">
+        <h3>Interactive 3D Models</h3>
+        <p>Rotate, zoom and inspect realistic 3D models of motherboards, CPUs, and GPUs.</p>
+        <div class="feature-actions">
+            <button class="btn-speak" data-speaking="false" title="Speak feature" aria-pressed="false">🔊 Speak</button>
+            <a class="btn-speak" href="lp3.html" style="background:#111;color:#fff;text-decoration:none;padding:6px 10px;border-radius:8px;">See More</a>
+        </div>
+    </article>
+
+    <!-- Feature 2 -->
+    <article class="feature-card" data-feature-text="Definitions and guides that explain each part and how it works in a computer system.">
+        <h3>Definitions & Guides</h3>
+        <p>Learn what each part does and how to use or install it safely.</p>
+        <div class="feature-actions">
+            <button class="btn-speak" data-speaking="false" title="Speak feature" aria-pressed="false">🔊 Speak</button>
+            <a class="btn-speak" href="lp2.html" style="background:#111;color:#fff;text-decoration:none;padding:6px 10px;border-radius:8px;">See More</a>
+        </div>
+    </article>
+
+    <!-- Feature 3 -->
+    <article class="feature-card" data-feature-text="Mobile friendly layouts and tools so you can learn on the go from any device.">
+        <h3>Mobile Friendly</h3>
+        <p>Access guides and models from your phone with a layout optimized for small screens.</p>
+        <div class="feature-actions">
+            <button class="btn-speak" data-speaking="false" title="Speak feature" aria-pressed="false">🔊 Speak</button>
+            <a class="btn-speak" href="lp.html" style="background:#111;color:#fff;text-decoration:none;padding:6px 10px;border-radius:8px;">See More</a>
+        </div>
+    </article>
 </section>
 
 <!-- MODELS -->
-<section class="models-section" id="models">
-    <h2>Explore Components</h2>
-    <div class="model-wrapper">
-        <div class="model-card">
-            <model-viewer src="rog_strix_x370-f_motherboard.glb" auto-rotate camera-controls></model-viewer>
+<section class="models-section" id="models" aria-labelledby="models-title">
+    <h2 id="models-title">Explore Components</h2>
+    <div class="model-wrapper" role="list">
+        <div class="model-card" role="listitem" aria-label="Motherboard model">
+            <model-viewer src="rog_strix_x370-f_motherboard.glb" auto-rotate camera-controls alt="Motherboard 3D model"></model-viewer>
             <div class="model-label">Motherboard</div>
-            <a href="lp3.html">See More</a>
+            <a href="lp3.html" style="display:inline-block;margin-top:8px;text-decoration:none;color:#00e5ff;">See More</a>
         </div>
-        <div class="model-card">
-            <model-viewer src="free_intel_cpu.glb" auto-rotate camera-controls></model-viewer>
+        <div class="model-card" role="listitem" aria-label="CPU model">
+            <model-viewer src="free_intel_cpu.glb" auto-rotate camera-controls alt="CPU 3D model"></model-viewer>
             <div class="model-label">CPU</div>
-            <a href="lp2.html">See More</a>
+            <a href="lp2.html" style="display:inline-block;margin-top:8px;text-decoration:none;color:#00e5ff;">See More</a>
         </div>
-        <div class="model-card">
-            <model-viewer src="nvidia_geforce_rtx_3090_-_gpu.glb" auto-rotate camera-controls></model-viewer>
+        <div class="model-card" role="listitem" aria-label="GPU model">
+            <model-viewer src="nvidia_geforce_rtx_3090_-_gpu.glb" auto-rotate camera-controls alt="GPU 3D model"></model-viewer>
             <div class="model-label">GPU</div>
-            <a href="lp.html">See More</a>
+            <a href="lp.html" style="display:inline-block;margin-top:8px;text-decoration:none;color:#00e5ff;">See More</a>
         </div>
     </div>
 </section>
@@ -181,18 +202,18 @@ footer { text-align:center; padding:30px 20px; background:#111; color:#fff; }
     &copy; 2025 BTVTEd-CSS Community. All Rights Reserved.
 </footer>
 
-<!-- CHAT SUPPORT BUTTON -->
-<div id="chat-container">
-  <div id="chat-button">💬 Chat</div>
-  <div id="chat-box">
-    <div id="chat-header">Support Chat <span id="chat-close">✖</span></div>
-    <div id="chat-messages"></div>
-    <input type="text" id="chat-input" placeholder="Type a message..." />
+<!-- CHAT SUPPORT (kept simple) -->
+<div id="chat-container" aria-hidden="false">
+  <div id="chat-button" role="button" tabindex="0" aria-label="Open support chat">💬 Chat</div>
+  <div id="chat-box" role="dialog" aria-label="Support chat window" aria-hidden="true">
+    <div id="chat-header">Support Chat <span id="chat-close" role="button" tabindex="0">✖</span></div>
+    <div id="chat-messages" aria-live="polite"></div>
+    <input type="text" id="chat-input" placeholder="Type a message..." aria-label="Chat input" />
   </div>
 </div>
 
 <!-- QR MODAL -->
-<div id="qr-modal">
+<div id="qr-modal" role="dialog" aria-hidden="true">
   <div id="qr-modal-content">
     <h2 style="color:#00e5ff;">Scan QR Code</h2>
     <video id="qr-video" autoplay muted playsinline></video>
@@ -201,18 +222,38 @@ footer { text-align:center; padding:30px 20px; background:#111; color:#fff; }
   </div>
 </div>
 
-<script type="module">
-import QrScanner from "https://unpkg.com/qr-scanner@1.4.2/qr-scanner.min.js";
+<script>
+/* =========== EmailJS init (placeholder) =========== */
+try {
+  if (window.emailjs) {
+    emailjs.init("YOUR_EMAILJS_USER_ID"); // <-- replace with real ID
+  }
+} catch(e) { console.warn('EmailJS init failed:', e); }
 
-/* NAVBAR TOGGLE */
+/* =========== Mobile menu toggle + auto-close on link click =========== */
 const hamburger = document.getElementById('hamburger');
 const menu = document.getElementById('menu');
+
 hamburger.addEventListener('click', () => {
-    menu.classList.toggle('active');  
-    hamburger.classList.toggle('open');
+  menu.classList.toggle('active');  
+  hamburger.classList.toggle('open');
+  // set aria-expanded for accessibility
+  const expanded = hamburger.classList.contains('open');
+  hamburger.setAttribute('aria-expanded', expanded ? 'true' : 'false');
 });
 
-/* CHAT SUPPORT */
+Array.from(menu.querySelectorAll('a')).forEach(link => {
+  link.addEventListener('click', () => {
+    // close the mobile menu when a link is clicked (if visible)
+    if (menu.classList.contains('active')) {
+      menu.classList.remove('active');
+      hamburger.classList.remove('open');
+      hamburger.setAttribute('aria-expanded', 'false');
+    }
+  });
+});
+
+/* =========== Chat open/close (simple) =========== */
 const chatButton = document.getElementById('chat-button');
 const chatBox = document.getElementById('chat-box');
 const chatClose = document.getElementById('chat-close');
@@ -220,37 +261,46 @@ const chatInput = document.getElementById('chat-input');
 const chatMessages = document.getElementById('chat-messages');
 
 chatButton.addEventListener('click', () => {
-    chatBox.style.display = chatBox.style.display === 'flex' ? 'none' : 'flex';
+  const isVisible = chatBox.style.display === 'flex';
+  chatBox.style.display = isVisible ? 'none' : 'flex';
+  chatBox.setAttribute('aria-hidden', isVisible ? 'true' : 'false');
+  if (!isVisible) {
     chatBox.style.flexDirection = 'column';
+    chatInput.focus();
+  }
 });
-chatClose.addEventListener('click', () => { chatBox.style.display = 'none'; });
+chatClose.addEventListener('click', () => {
+  chatBox.style.display = 'none';
+  chatBox.setAttribute('aria-hidden', 'true');
+});
 
 chatInput.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter' && chatInput.value.trim() !== '') {
-        const msg = document.createElement('div');
-        msg.textContent = "You: " + chatInput.value;
-        chatMessages.appendChild(msg);
+  if (e.key === 'Enter' && chatInput.value.trim() !== '') {
+    const userMsg = document.createElement('div');
+    userMsg.textContent = "You: " + chatInput.value;
+    chatMessages.appendChild(userMsg);
 
-        emailjs.send("YOUR_SERVICE_ID","YOUR_TEMPLATE_ID",{
-            message: chatInput.value,
-            to_email: "css.demo.web@gmail.com"
-        }).then(function(response){
-            console.log("SUCCESS!", response.status, response.text);
-        }, function(error){
-            console.log("FAILED...", error);
-        });
-
-        const reply = document.createElement('div');
-        reply.textContent = "Support: Thank you for your message! We'll get back to you via email.";
-        reply.style.color = "#00e5ff";
-        chatMessages.appendChild(reply);
-
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-        chatInput.value = '';
+    // If EmailJS properly configured, send message
+    if (window.emailjs) {
+      emailjs.send("YOUR_SERVICE_ID","YOUR_TEMPLATE_ID",{
+        message: chatInput.value,
+        to_email: "css.demo.web@gmail.com"
+      }).catch(err => console.warn('Email send failed', err));
     }
+
+    const reply = document.createElement('div');
+    reply.textContent = "Support: Thank you for your message! We'll get back to you via email.";
+    reply.style.color = "#00e5ff";
+    chatMessages.appendChild(reply);
+
+    // Scroll to bottom
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    chatInput.value = '';
+  }
 });
 
-/* FEATURES LINK WITH QR SCAN */
+/* =========== QR Scanner setup (dynamic import) =========== */
+let qrScanner = null;
 const featureLink = document.getElementById('feature-link');
 const qrModal = document.getElementById('qr-modal');
 const qrVideo = document.getElementById('qr-video');
@@ -258,48 +308,128 @@ const qrMsg = document.getElementById('qr-msg');
 const qrBtnClose = document.getElementById('qr-btn-close');
 const REQUIRED_CODE = "AUTHORIZED_USER";
 
-let qrScanner = null;
+async function startQrScanner() {
+  // dynamic import from unpkg
+  try {
+    const module = await import('https://unpkg.com/qr-scanner@1.4.2/qr-scanner.min.js');
+    const QrScanner = module.default ?? module.QrScanner ?? module;
+    qrScanner = new QrScanner(qrVideo, result => {
+      if (!result) return;
+      if (String(result).trim() === REQUIRED_CODE) {
+        qrMsg.style.color = '#bfffcf';
+        qrMsg.textContent = 'QR accepted — Redirecting...';
+        try { qrScanner.stop(); } catch(e){}
+        setTimeout(()=> closeQRModal(true), 400);
+      } else {
+        qrMsg.style.color = '#ffb3b3';
+        qrMsg.textContent = 'Unauthorized QR. Try again.';
+      }
+    }, { preferredCamera: 'environment' });
+    await qrScanner.start();
+    qrMsg.style.color = '#00e5ff';
+    qrMsg.textContent = 'Exclusive only for authorized users.';
+  } catch(err) {
+    console.warn('QR Scanner error', err);
+    qrMsg.style.color = '#ffb3b3';
+    qrMsg.textContent = 'Camera not accessible.';
+  }
+}
 
 featureLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    qrModal.style.display = 'flex';
-    qrMsg.style.color = '#00e5ff';
-    qrMsg.textContent = 'Initializing camera...';
-
-    if(qrScanner) { try { qrScanner.destroy(); } catch(e){} qrScanner = null; }
-
-    qrScanner = new QrScanner(qrVideo, result => {
-        if(!result) return;
-        if(String(result).trim() === REQUIRED_CODE){
-            qrMsg.style.color = '#bfffcf';
-            qrMsg.textContent = 'QR accepted — Redirecting...';
-            try { qrScanner.stop(); } catch(e){}
-            setTimeout(()=> { closeQRModal(true); }, 350);
-        } else {
-            qrMsg.style.color = '#ffb3b3';
-            qrMsg.textContent = 'Unauthorized QR. Try again.';
-        }
-    }, { preferredCamera: 'environment' });
-
-    qrScanner.start().then(() => {
-        qrMsg.style.color = '#00e5ff';
-        qrMsg.textContent = 'Scan the QR code now';
-    }).catch(err => {
-        console.error(err);
-        qrMsg.style.color = '#ffb3b3';
-        qrMsg.textContent = 'Camera not accessible.';
-    });
+  e.preventDefault();
+  qrModal.style.display = 'flex';
+  qrModal.setAttribute('aria-hidden', 'false');
+  qrMsg.style.color = '#00e5ff';
+  qrMsg.textContent = 'Initializing camera...';
+  // ensure previous scanner destroyed
+  try { qrScanner && qrScanner.destroy(); } catch(e){}
+  qrScanner = null;
+  startQrScanner();
 });
 
 function closeQRModal(success=false){
-    try { qrScanner && qrScanner.stop(); qrScanner && qrScanner.destroy(); } catch(e){}
-    qrScanner = null;
-    qrModal.style.display = 'none';
-    if(success){ window.location.href = 'features.html'; }
+  try { qrScanner && qrScanner.stop(); qrScanner && qrScanner.destroy(); } catch(e){}
+  qrScanner = null;
+  qrModal.style.display = 'none';
+  qrModal.setAttribute('aria-hidden', 'true');
+  if(success){ window.location.href = 'features.html'; }
+}
+qrBtnClose.addEventListener('click', () => closeQRModal(false));
+
+/* =========== FEATURES TTS (SpeechSynthesis) =========== */
+const speakButtons = document.querySelectorAll('.feature-card .btn-speak');
+
+function supportsTTS() {
+  return 'speechSynthesis' in window && typeof window.speechSynthesis.speak === 'function';
 }
 
-qrBtnClose.addEventListener('click', () => closeQRModal(false));
-</script>
+function stopSpeaking() {
+  if (supportsTTS() && window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+  }
+}
 
+function speakText(text) {
+  if (!supportsTTS()) {
+    alert('Text-to-Speech is not supported in this browser.');
+    return;
+  }
+  stopSpeaking();
+  const utter = new SpeechSynthesisUtterance(text);
+  // optional: tune voice parameters
+  utter.rate = 1; // speed (0.1 - 10)
+  utter.pitch = 1; // pitch (0 - 2)
+  // choose a voice if you want (left to browser default)
+  // const voices = window.speechSynthesis.getVoices();
+  // utter.voice = voices.find(v=>v.lang.startsWith('en')) || voices[0];
+  window.speechSynthesis.speak(utter);
+}
+
+/* Attach click handlers to Speak buttons */
+speakButtons.forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    const card = btn.closest('.feature-card');
+    // prefer explicit data attribute text, otherwise read visible heading+paragraph
+    const explicit = card.getAttribute('data-feature-text');
+    let textToSpeak = explicit && explicit.trim().length ? explicit.trim() : (
+      (card.querySelector('h3')?.textContent || '') + '. ' + (card.querySelector('p')?.textContent || '')
+    );
+    // update aria-pressed
+    const isSpeaking = btn.getAttribute('aria-pressed') === 'true';
+    // toggle behavior: stop if already speaking
+    if (isSpeaking) {
+      stopSpeaking();
+      btn.setAttribute('aria-pressed', 'false');
+      btn.dataset.speaking = 'false';
+      return;
+    }
+    // set pressed for visual hint
+    document.querySelectorAll('.btn-speak').forEach(b => b.setAttribute('aria-pressed','false'));
+    btn.setAttribute('aria-pressed','true');
+    btn.dataset.speaking = 'true';
+    speakText(textToSpeak);
+    // clear pressed state when finished
+    const onEnd = () => {
+      btn.setAttribute('aria-pressed','false');
+      btn.dataset.speaking = 'false';
+      window.speechSynthesis.removeEventListener('end', onEndWrapped);
+    };
+    // some browsers fire 'end' on utterance; to be safe we add both utter.onend and global listener
+    const onEndWrapped = () => onEnd();
+    // attach when utterance ends
+    // can't access the utter directly here; instead poll for speaking state
+    const interval = setInterval(() => {
+      if (!window.speechSynthesis.speaking) {
+        btn.setAttribute('aria-pressed','false');
+        btn.dataset.speaking = 'false';
+        clearInterval(interval);
+      }
+    }, 250);
+  });
+});
+
+/* Stop any speaking if user navigates away */
+window.addEventListener('beforeunload', () => stopSpeaking());
+</script>
 </body>
 </html>
