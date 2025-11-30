@@ -5,8 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CSS Tools & Equipment Guides</title>
 <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
 <!-- EmailJS SDK -->
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
+<script type="text/javascript">
+   (function(){
+      emailjs.init("YOUR_EMAILJS_USER_ID"); // Replace with your EmailJS user ID
+   })();
+</script>
+
 <style>
 /* =======================
    BASIC RESET & VARIABLES
@@ -19,8 +26,15 @@ img { max-width:100%; display:block; }
 /* =======================
    NAVBAR
 ======================= */
-.navbar { display:flex; justify-content: space-between; align-items:center; padding: 15px 25px; background: cyan; position: sticky; top:0; z-index:1000; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+.navbar {
+    display:flex; justify-content: space-between; align-items:center;
+    padding: 15px 25px; background: cyan; position: sticky; top:0; 
+    z-index:1000;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
 .navbar .logo { font-size:1.5rem; font-weight:bold; color:#000; }
+
+/* MENU DEFAULT (DESKTOP) */
 .menu ul { display:flex; list-style:none; gap:15px; }
 .menu ul li a { padding:5px 10px; border-radius:5px; transition:0.3s; }
 .menu ul li a:hover { background:#00e5ff; color:#fff; }
@@ -34,6 +48,9 @@ img { max-width:100%; display:block; }
 .hamburger.open span:nth-child(2) { opacity:0; }
 .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(6px,-6px); }
 
+/* =======================
+   MOBILE MENU DROPDOWN
+======================= */
 @media (max-width: 768px) {
     .navbar { flex-direction: row; justify-content: space-between; align-items: center; padding:15px 20px; }
     .hamburger { display:flex; margin-left:auto; }
@@ -89,6 +106,7 @@ footer { text-align:center; padding:30px 20px; background:#111; color:#fff; }
 #chat-close { cursor:pointer; }
 #chat-messages { padding:10px; flex:1; overflow-y:auto; }
 #chat-input { width:100%; padding:10px; border:none; outline:none; border-top:1px solid #555; border-radius:0 0 20px 20px; background:#222; color:#fff; }
+
 </style>
 </head>
 <body>
@@ -96,15 +114,17 @@ footer { text-align:center; padding:30px 20px; background:#111; color:#fff; }
 <!-- NAVBAR -->
 <div class="navbar">
     <div class="logo">BTVTEd-CSS Community</div>
+
     <div class="hamburger" id="hamburger">
         <span></span>
         <span></span>
         <span></span>
     </div>
+
     <div class="menu" id="menu">
         <ul>
             <li><a href="#home">HOME</a></li>
-            <li><a href="features.html">FEATURES</a></li>
+            <li><a href="#features" id="feature-link">FEATURES</a></li>
             <li><a href="#models">MODELS</a></li>
             <li><a href="about.html">ABOUT</a></li>
             <li><a href="blog.html">BLOG</a></li>
@@ -130,21 +150,25 @@ footer { text-align:center; padding:30px 20px; background:#111; color:#fff; }
 <section class="models-section" id="models">
     <h2>Explore Components</h2>
     <div class="model-wrapper">
+
         <div class="model-card">
             <model-viewer src="rog_strix_x370-f_motherboard.glb" auto-rotate camera-controls></model-viewer>
             <div class="model-label">Motherboard</div>
             <a href="lp3.html">See More</a>
         </div>
+
         <div class="model-card">
             <model-viewer src="free_intel_cpu.glb" auto-rotate camera-controls></model-viewer>
             <div class="model-label">CPU</div>
             <a href="lp2.html">See More</a>
         </div>
+
         <div class="model-card">
             <model-viewer src="nvidia_geforce_rtx_3090_-_gpu.glb" auto-rotate camera-controls></model-viewer>
             <div class="model-label">GPU</div>
             <a href="lp.html">See More</a>
         </div>
+
     </div>
 </section>
 
@@ -172,7 +196,17 @@ hamburger.addEventListener('click', () => {
     hamburger.classList.toggle('open');
 });
 
-/* CHAT SUPPORT FUNCTIONALITY */
+/* FEATURE LINK VOICE ALERT */
+const featureLink = document.getElementById('feature-link');
+featureLink.addEventListener('click', function(e){
+    e.preventDefault();
+    const msg = "You need a QR code card to access this feature.";
+    const utterance = new SpeechSynthesisUtterance(msg);
+    speechSynthesis.speak(utterance);
+    alert(msg);
+});
+
+/* CHAT SUPPORT WITH EMAILJS */
 const chatButton = document.getElementById('chat-button');
 const chatBox = document.getElementById('chat-box');
 const chatClose = document.getElementById('chat-close');
@@ -185,32 +219,26 @@ chatButton.addEventListener('click', () => {
 });
 chatClose.addEventListener('click', () => { chatBox.style.display = 'none'; });
 
-// EmailJS initialization
-emailjs.init("YOUR_PUBLIC_KEY"); // Replace with your EmailJS public key
-
 chatInput.addEventListener('keypress', function(e) {
     if (e.key === 'Enter' && chatInput.value.trim() !== '') {
-        const userMessage = chatInput.value;
-
-        // Display in chat
         const msg = document.createElement('div');
-        msg.textContent = "You: " + userMessage;
+        msg.textContent = "You: " + chatInput.value;
         chatMessages.appendChild(msg);
 
-        // Send email via EmailJS
-        emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
-            user_email: "css.demo.web@gmail.com",
-            message: userMessage
-        })
-        .then(function(response) {
-            const reply = document.createElement('div');
-            reply.innerHTML = `Support: Your message has been sent to <a href="mailto:css.demo.web@gmail.com" style="color:#00e5ff;">css.demo.web@gmail.com</a>. We'll respond via email shortly.`;
-            chatMessages.appendChild(reply);
-        }, function(error) {
-            const errorMsg = document.createElement('div');
-            errorMsg.textContent = "Error sending message. Please try emailing directly.";
-            chatMessages.appendChild(errorMsg);
+        // Send message via EmailJS
+        emailjs.send("YOUR_SERVICE_ID","YOUR_TEMPLATE_ID",{
+            message: chatInput.value,
+            to_email: "css.demo.web@gmail.com"
+        }).then(function(response){
+            console.log("SUCCESS!", response.status, response.text);
+        }, function(error){
+            console.log("FAILED...", error);
         });
+
+        const reply = document.createElement('div');
+        reply.textContent = "Support: Thank you for your message! We'll get back to you via email.";
+        reply.style.color = "#00e5ff";
+        chatMessages.appendChild(reply);
 
         chatMessages.scrollTop = chatMessages.scrollHeight;
         chatInput.value = '';
