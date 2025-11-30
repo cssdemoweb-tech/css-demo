@@ -107,6 +107,14 @@ footer { text-align:center; padding:30px 20px; background:#111; color:#fff; }
 #chat-messages { padding:10px; flex:1; overflow-y:auto; }
 #chat-input { width:100%; padding:10px; border:none; outline:none; border-top:1px solid #555; border-radius:0 0 20px 20px; background:#222; color:#fff; }
 
+/* =======================
+   QR MODAL STYLES
+======================= */
+#qr-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:3000; justify-content:center; align-items:center; }
+#qr-modal-content { background:#061221; padding:20px; border-radius:12px; text-align:center; color:#fff; max-width:400px; width:90%; }
+#qr-video { width:320px; height:320px; background:#000; margin:12px auto; border-radius:8px; }
+#qr-btn-close { padding:8px 12px; border:none; border-radius:6px; background:#111; color:#fff; cursor:pointer; margin-top:10px; }
+#qr-msg { margin-top:10px; color:#ffb3b3; font-weight:bold; }
 </style>
 </head>
 <body>
@@ -124,7 +132,7 @@ footer { text-align:center; padding:30px 20px; background:#111; color:#fff; }
     <div class="menu" id="menu">
         <ul>
             <li><a href="#home">HOME</a></li>
-            <li><a href="#features" id="feature-link">FEATURES</a></li>
+            <li><a href="features.html" id="feature-link">FEATURES</a></li>
             <li><a href="#models">MODELS</a></li>
             <li><a href="about.html">ABOUT</a></li>
             <li><a href="blog.html">BLOG</a></li>
@@ -150,25 +158,21 @@ footer { text-align:center; padding:30px 20px; background:#111; color:#fff; }
 <section class="models-section" id="models">
     <h2>Explore Components</h2>
     <div class="model-wrapper">
-
         <div class="model-card">
             <model-viewer src="rog_strix_x370-f_motherboard.glb" auto-rotate camera-controls></model-viewer>
             <div class="model-label">Motherboard</div>
             <a href="lp3.html">See More</a>
         </div>
-
         <div class="model-card">
             <model-viewer src="free_intel_cpu.glb" auto-rotate camera-controls></model-viewer>
             <div class="model-label">CPU</div>
             <a href="lp2.html">See More</a>
         </div>
-
         <div class="model-card">
             <model-viewer src="nvidia_geforce_rtx_3090_-_gpu.glb" auto-rotate camera-controls></model-viewer>
             <div class="model-label">GPU</div>
             <a href="lp.html">See More</a>
         </div>
-
     </div>
 </section>
 
@@ -187,7 +191,19 @@ footer { text-align:center; padding:30px 20px; background:#111; color:#fff; }
   </div>
 </div>
 
-<script>
+<!-- QR MODAL -->
+<div id="qr-modal">
+  <div id="qr-modal-content">
+    <h2 style="color:#00e5ff;">Scan QR Code</h2>
+    <video id="qr-video" autoplay muted playsinline></video>
+    <div id="qr-msg">Initializing camera...</div>
+    <button id="qr-btn-close">Close</button>
+  </div>
+</div>
+
+<script type="module">
+import QrScanner from "https://unpkg.com/qr-scanner@1.4.2/qr-scanner.min.js";
+
 /* NAVBAR TOGGLE */
 const hamburger = document.getElementById('hamburger');
 const menu = document.getElementById('menu');
@@ -196,17 +212,7 @@ hamburger.addEventListener('click', () => {
     hamburger.classList.toggle('open');
 });
 
-/* FEATURE LINK VOICE ALERT */
-const featureLink = document.getElementById('feature-link');
-featureLink.addEventListener('click', function(e){
-    e.preventDefault();
-    const msg = "You need a QR code card to access this feature.";
-    const utterance = new SpeechSynthesisUtterance(msg);
-    speechSynthesis.speak(utterance);
-    alert(msg);
-});
-
-/* CHAT SUPPORT WITH EMAILJS */
+/* CHAT SUPPORT */
 const chatButton = document.getElementById('chat-button');
 const chatBox = document.getElementById('chat-box');
 const chatClose = document.getElementById('chat-close');
@@ -225,7 +231,6 @@ chatInput.addEventListener('keypress', function(e) {
         msg.textContent = "You: " + chatInput.value;
         chatMessages.appendChild(msg);
 
-        // Send message via EmailJS
         emailjs.send("YOUR_SERVICE_ID","YOUR_TEMPLATE_ID",{
             message: chatInput.value,
             to_email: "css.demo.web@gmail.com"
@@ -244,6 +249,56 @@ chatInput.addEventListener('keypress', function(e) {
         chatInput.value = '';
     }
 });
+
+/* FEATURES LINK WITH QR SCAN */
+const featureLink = document.getElementById('feature-link');
+const qrModal = document.getElementById('qr-modal');
+const qrVideo = document.getElementById('qr-video');
+const qrMsg = document.getElementById('qr-msg');
+const qrBtnClose = document.getElementById('qr-btn-close');
+const REQUIRED_CODE = "AUTHORIZED_USER";
+
+let qrScanner = null;
+
+featureLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    qrModal.style.display = 'flex';
+    qrMsg.style.color = '#00e5ff';
+    qrMsg.textContent = 'Initializing camera...';
+
+    if(qrScanner) { try { qrScanner.destroy(); } catch(e){} qrScanner = null; }
+
+    qrScanner = new QrScanner(qrVideo, result => {
+        if(!result) return;
+        if(String(result).trim() === REQUIRED_CODE){
+            qrMsg.style.color = '#bfffcf';
+            qrMsg.textContent = 'QR accepted — Redirecting...';
+            try { qrScanner.stop(); } catch(e){}
+            setTimeout(()=> { closeQRModal(true); }, 350);
+        } else {
+            qrMsg.style.color = '#ffb3b3';
+            qrMsg.textContent = 'Unauthorized QR. Try again.';
+        }
+    }, { preferredCamera: 'environment' });
+
+    qrScanner.start().then(() => {
+        qrMsg.style.color = '#00e5ff';
+        qrMsg.textContent = 'Scan the QR code now';
+    }).catch(err => {
+        console.error(err);
+        qrMsg.style.color = '#ffb3b3';
+        qrMsg.textContent = 'Camera not accessible.';
+    });
+});
+
+function closeQRModal(success=false){
+    try { qrScanner && qrScanner.stop(); qrScanner && qrScanner.destroy(); } catch(e){}
+    qrScanner = null;
+    qrModal.style.display = 'none';
+    if(success){ window.location.href = 'features.html'; }
+}
+
+qrBtnClose.addEventListener('click', () => closeQRModal(false));
 </script>
 
 </body>
