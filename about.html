@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BTVTEd-CSS Community - About</title>
+<style>
+/* =======================
+   BASIC RESET
+======================= */
+* { box-sizing: border-box; margin:0; padding:0; font-family: Arial, sans-serif; }
+body { background:#f4f4f9; color:#fff; line-height:1.6; scroll-behavior: smooth; }
+a { text-decoration:none; color:inherit; }
+
+/* =======================
+   NAVBAR
+======================= */
+.navbar {
+  display:flex;
+  justify-content: space-between;
+  align-items:center;
+  padding: 15px 25px;
+  background: cyan;
+  position: sticky;
+  top:0;
+  z-index:1000;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+.navbar .logo { font-size:1.5rem; font-weight:bold; color:#000; }
+
+/* MENU */
+.menu ul { display:flex; list-style:none; gap:15px; }
+.menu ul li a { padding:5px 10px; border-radius:5px; transition:0.3s; }
+.menu ul li a:hover { background:#00e5ff; color:#fff; }
+
+/* HAMBURGER */
+.hamburger {
+  width: 30px;
+  height: 22px;
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+}
+.hamburger span { height: 4px; background: #000; border-radius: 5px; transition: 0.3s ease; }
+/* Hamburger → X */
+.hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 6px); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(6px, -6px); }
+
+/* MOBILE MENU DROPDOWN */
+@media(max-width:768px){
+  .hamburger { display: flex; }
+  .menu { display: none; width:100%; }
+  .menu.active { display:block; }
+  .menu ul { flex-direction: column; background: cyan; padding: 15px 0; text-align:center; gap:20px; }
+}
+
+/* =======================
+   ABOUT SECTION
+======================= */
+#About { background: linear-gradient(120deg, #0f2027, #203a43, #2c5364); padding:80px 20px; color:#fff; }
+#About h1 { text-align:center; color:#00e5ff; margin-bottom:50px; font-size:3rem; }
+
+/* ABOUT CAROUSEL */
+.about-container { display:flex; justify-content:center; flex-wrap:wrap; }
+.about-content { background: rgba(26,26,26,0.95); padding:40px; border-radius:25px; max-width:600px; text-align:center; transition: transform 0.5s ease; }
+#member-wrapper { transition: transform 0.8s ease, opacity 0.8s ease; }
+#member-wrapper img { width:150px; height:150px; border-radius:50%; object-fit:cover; margin-bottom:15px; }
+#member-wrapper p:first-of-type { font-weight:700; font-size:1.2rem; color:#00e5ff; margin-bottom:5px; }
+#member-wrapper p:last-of-type { font-size:0.9rem; line-height:1.4; }
+#indicator-dots { margin-top:20px; display:flex; justify-content:center; gap:10px; }
+.dot { width:12px; height:12px; border-radius:50%; background:#555; cursor:pointer; transition: all 0.4s ease; }
+.dot.active { background:#00e5ff; }
+
+/* CAROUSEL BUTTONS AT BOTTOM */
+.carousel-buttons { display:flex; justify-content:space-between; margin-top:15px; }
+.side-btn { padding: 12px 18px; font-size:1.5rem; border-radius:50%; background:#00e5ff; color:#fff; border:none; cursor:pointer; transition: transform 0.3s ease; }
+.side-btn:hover { transform: scale(1.2); }
+
+/* VALUE CARDS */
+.our-values { max-width:900px; margin:50px auto 0 auto; display:flex; flex-wrap:wrap; justify-content:center; gap:20px; }
+.value-card { background: rgba(30,30,30,0.95); padding:25px; border-radius:20px; flex:1 1 250px; text-align:center; box-shadow:0 4px 15px rgba(0,0,0,0.3); transition: transform 0.3s ease; }
+.value-card h3 { color:#00e5ff; margin-bottom:15px; }
+.value-card p, .value-card ul { font-size:0.95rem; line-height:1.5; }
+.value-card ul { padding-left:20px; text-align:left; }
+.value-card:hover { transform: scale(1.03); }
+
+/* MOBILE FIXES */
+@media(max-width:768px){
+  .about-container { flex-direction: column; align-items:center; gap:15px; text-align:center; }
+  .about-content { width: 90%; padding:25px; }
+  #member-wrapper img { width:110px; height:110px; }
+  #indicator-dots { gap:8px; }
+  #member-wrapper p:first-of-type { font-size:1.1rem; }
+  #member-wrapper p:last-of-type { font-size:0.9rem; }
+  .our-values { flex-direction: column; align-items:center; width:100%; gap:15px; }
+  .value-card { width: 90% !important; height:auto !important; padding:20px; }
+  .value-card ul { text-align:left; padding-left:20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="logo">BTVTEd-CSS Community</div>
+  <button id="hamburger" class="hamburger" aria-label="Toggle menu" aria-expanded="false" aria-controls="menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div id="menu" class="menu">
+    <ul>
+      <li><a href="index.html">HOME</a></li>
+      <li><a href="features.html">FEATURES</a></li>
+      <li><a href="models.html">MODELS</a></li>
+      <li><a href="#About">ABOUT</a></li>
+      <li><a href="blog.html">BLOG</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ABOUT SECTION -->
+<section id="About">
+  <h1>ABOUT US</h1>
+  <!-- TEAM CAROUSEL -->
+  <div class="about-container">
+    <div class="about-content">
+      <div id="member-wrapper">
+        <img id="member-img" src="test1.jpg" alt="Team Member">
+        <p id="member-text"></p>
+        <p id="member-desc"></p>
+      </div>
+      <div id="indicator-dots"></div>
+      <!-- Buttons at bottom -->
+      <div class="carousel-buttons">
+        <button class="side-btn left-btn" onclick="prevMember()">◀</button>
+        <button class="side-btn right-btn" onclick="nextMember()">▶</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- VISION, MISSION, GOALS -->
+  <div class="our-values">
+    <div class="value-card">
+      <h3>Our Vision</h3>
+      <p>To create an accessible and interactive platform for learning computer components, ensuring everyone, including deaf and blind users, can explore technology with ease.</p>
+    </div>
+    <div class="value-card">
+      <h3>Our Mission</h3>
+      <p>To educate students and enthusiasts through hands-on learning, visual guides, and accessible content that promotes understanding and practical skills in ICT.</p>
+    </div>
+    <div class="value-card">
+      <h3>Our Goals</h3>
+      <ul>
+        <li>Provide clear explanations of computer parts and their functions.</li>
+        <li>Ensure accessibility for visually and hearing-impaired users.</li>
+        <li>Create a responsive, user-friendly website for all devices.</li>
+        <li>Encourage interactive and practical learning for students.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script>
+// TEAM CAROUSEL
+const teamMembers = [
+  { name: "Andre - Lead Developer", img: "test1.jpg", desc: "Handled the main development of the website and implemented interactive features." },
+  { name: "Khent Harvey - UI/UX Designer", img: "test3.jpg", desc: "Designed the user interface, ensuring a clean layout and responsive design." },
+  { name: "BaiGPT - Content Creator", img: "test4.jpg", desc: "Assists with debugging code and ensures smooth performance." },
+  { name: "Clarence - Documentation Specialist", img: "test2.jpg", desc: "Generates and refines documentation and guides." }
+];
+let currentIndex = 0;
+const memberText = document.getElementById("member-text");
+const memberImg = document.getElementById("member-img");
+const memberDesc = document.getElementById("member-desc");
+const memberWrapper = document.getElementById("member-wrapper");
+const indicatorDots = document.getElementById("indicator-dots");
+
+// Create dots
+teamMembers.forEach((_, i)=>{
+  const dot = document.createElement("div");
+  dot.classList.add("dot");
+  dot.addEventListener("click", ()=>{ if(i!==currentIndex){ showMember(i, i>currentIndex?1:-1); currentIndex=i; resetAutoSlide(); }});
+  indicatorDots.appendChild(dot);
+});
+
+function updateDots(){ document.querySelectorAll(".dot").forEach((dot,i)=>dot.classList.toggle("active",i===currentIndex)); }
+function showMember(index,direction=1){
+  memberWrapper.style.transition="none";
+  memberWrapper.style.transform=`translateX(${100*direction}%)`;
+  memberWrapper.style.opacity=0;
+  setTimeout(()=>{
+    memberText.innerHTML = teamMembers[index].name;
+    memberImg.src = teamMembers[index].img;
+    memberDesc.innerText = teamMembers[index].desc;
+    memberWrapper.style.transition="transform 0.8s ease, opacity 0.8s ease";
+    memberWrapper.style.transform="translateX(0)";
+    memberWrapper.style.opacity=1;
+    updateDots();
+  },50);
+}
+function prevMember(){ currentIndex = currentIndex-1<0?teamMembers.length-1:currentIndex-1; showMember(currentIndex,-1); resetAutoSlide(); }
+function nextMember(){ currentIndex = currentIndex+1>=teamMembers.length?0:currentIndex+1; showMember(currentIndex,1); resetAutoSlide(); }
+let autoSlideInterval = setInterval(()=>nextMember(),5000);
+function resetAutoSlide(){ clearInterval(autoSlideInterval); autoSlideInterval = setInterval(()=>nextMember(),5000); }
+showMember(currentIndex);
+
+// HAMBURGER MENU
+document.addEventListener('DOMContentLoaded', ()=>{
+  const hamburger = document.getElementById('hamburger');
+  const menu = document.getElementById('menu');
+  hamburger.addEventListener('click', e=>{
+    e.stopPropagation();
+    menu.classList.toggle('active');
+    hamburger.classList.toggle('open');
+  });
+  document.addEventListener('click', e=>{
+    if(!menu.contains(e.target) && !hamburger.contains(e.target)){
+      menu.classList.remove('active');
+      hamburger.classList.remove('open');
+    }
+  });
+});
+</script>
+</body>
+</html>
