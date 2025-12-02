@@ -20,9 +20,7 @@ body { background:#f4f4f9; color:#000; line-height:1.6; scroll-behavior: smooth;
 a { text-decoration:none; color:inherit; }
 img { max-width:100%; display:block; }
 
-/* =======================
-   NAVBAR
-======================= */
+/* NAVBAR */
 .navbar {
     display:flex; justify-content: space-between; align-items:center;
     padding: 12px 18px; background: cyan; position: sticky; top:0; 
@@ -76,6 +74,19 @@ img { max-width:100%; display:block; }
 .btn-speak:active { transform:scale(.98); }
 .btn-speak[aria-pressed="true"] { box-shadow:0 0 0 4px rgba(0,229,255,0.12); }
 
+/* Voice recognition (microphone) */
+#voice-btn {
+  position: fixed; left:18px; bottom:18px; z-index:20000;
+  background: linear-gradient(45deg,#ff5f6d,#ffc371); color:#111; border:none; padding:12px 14px;
+  border-radius:999px; box-shadow:0 8px 20px rgba(0,0,0,0.2); cursor:pointer; font-weight:700;
+}
+#voice-btn.listening { box-shadow:0 0 0 6px rgba(255,195,113,0.14); transform:scale(1.03); }
+#transcript {
+  position: fixed; left:18px; bottom:78px; z-index:20000; min-width:200px; max-width:320px;
+  background: rgba(0,0,0,0.75); color:#fff; padding:10px 12px; border-radius:10px; font-size:0.95rem;
+  box-shadow:0 10px 30px rgba(0,0,0,0.25); display:none; word-break:break-word;
+}
+
 /* MODELS */
 .models-section { padding:36px 16px; max-width:1200px; margin:0 auto; }
 .models-section h2 { text-align:center; color:#00e5ff; margin-bottom:20px; }
@@ -115,13 +126,11 @@ footer { text-align:center; padding:20px 12px; background:#111; color:#fff; marg
 <!-- NAVBAR -->
 <div class="navbar">
     <div class="logo">BTVTEd-CSS Community</div>
-
     <div class="hamburger" id="hamburger" aria-label="Open menu" role="button" tabindex="0">
         <span></span>
         <span></span>
         <span></span>
     </div>
-
     <nav class="menu" id="menu" aria-label="Main menu">
         <ul>
             <li><a href="#home">HOME</a></li>
@@ -143,8 +152,6 @@ footer { text-align:center; padding:20px 12px; background:#111; color:#fff; marg
 <!-- FEATURES -->
 <section class="features" id="features" aria-labelledby="features-title">
     <h2 id="features-title" style="position:absolute;left:-9999px;top:auto;">Features</h2>
-
-    <!-- Feature 1 -->
     <article class="feature-card" data-feature-text="Interactive 3D Models. Rotate and zoom to examine components from every angle.">
         <h3>Interactive 3D Models</h3>
         <p>Rotate, zoom and inspect realistic 3D models of motherboards, CPUs, and GPUs.</p>
@@ -153,8 +160,6 @@ footer { text-align:center; padding:20px 12px; background:#111; color:#fff; marg
             <a class="btn-speak" href="lp3.html" style="background:#111;color:#fff;text-decoration:none;padding:6px 10px;border-radius:8px;">See More</a>
         </div>
     </article>
-
-    <!-- Feature 2 -->
     <article class="feature-card" data-feature-text="Definitions and guides that explain each part and how it works in a computer system.">
         <h3>Definitions & Guides</h3>
         <p>Learn what each part does and how to use or install it safely.</p>
@@ -163,8 +168,6 @@ footer { text-align:center; padding:20px 12px; background:#111; color:#fff; marg
             <a class="btn-speak" href="lp2.html" style="background:#111;color:#fff;text-decoration:none;padding:6px 10px;border-radius:8px;">See More</a>
         </div>
     </article>
-
-    <!-- Feature 3 -->
     <article class="feature-card" data-feature-text="Mobile friendly layouts and tools so you can learn on the go from any device.">
         <h3>Mobile Friendly</h3>
         <p>Access guides and models from your phone with a layout optimized for small screens.</p>
@@ -202,7 +205,7 @@ footer { text-align:center; padding:20px 12px; background:#111; color:#fff; marg
     &copy; 2025 BTVTEd-CSS Community. All Rights Reserved.
 </footer>
 
-<!-- CHAT SUPPORT (kept simple) -->
+<!-- CHAT SUPPORT -->
 <div id="chat-container" aria-hidden="false">
   <div id="chat-button" role="button" tabindex="0" aria-label="Open support chat">💬 Chat</div>
   <div id="chat-box" role="dialog" aria-label="Support chat window" aria-hidden="true">
@@ -223,213 +226,344 @@ footer { text-align:center; padding:20px 12px; background:#111; color:#fff; marg
 </div>
 
 <script>
-/* =========== EmailJS init (placeholder) =========== */
-try {
-  if (window.emailjs) {
-    emailjs.init("YOUR_EMAILJS_USER_ID"); // <-- replace with real ID
-  }
-} catch(e) { console.warn('EmailJS init failed:', e); }
+/* ========== EmailJS Init ========== */
+try { if(window.emailjs) emailjs.init("YOUR_EMAILJS_USER_ID"); } catch(e){console.warn('EmailJS init failed:', e);}
 
-/* =========== Mobile menu toggle + auto-close on link click =========== */
+/* ========== Mobile menu toggle ========== */
 const hamburger = document.getElementById('hamburger');
 const menu = document.getElementById('menu');
-
 hamburger.addEventListener('click', () => {
   menu.classList.toggle('active');  
   hamburger.classList.toggle('open');
-  // set aria-expanded for accessibility
-  const expanded = hamburger.classList.contains('open');
-  hamburger.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+  hamburger.setAttribute('aria-expanded', hamburger.classList.contains('open')?'true':'false');
 });
-
 Array.from(menu.querySelectorAll('a')).forEach(link => {
   link.addEventListener('click', () => {
-    // close the mobile menu when a link is clicked (if visible)
-    if (menu.classList.contains('active')) {
-      menu.classList.remove('active');
-      hamburger.classList.remove('open');
-      hamburger.setAttribute('aria-expanded', 'false');
+    if(menu.classList.contains('active')){
+      menu.classList.remove('active'); hamburger.classList.remove('open'); hamburger.setAttribute('aria-expanded','false');
     }
   });
 });
 
-/* =========== Chat open/close (simple) =========== */
+/* ========== Chat open/close ========== */
 const chatButton = document.getElementById('chat-button');
 const chatBox = document.getElementById('chat-box');
 const chatClose = document.getElementById('chat-close');
 const chatInput = document.getElementById('chat-input');
 const chatMessages = document.getElementById('chat-messages');
 
+/* Autofocus chat input on page load */
+window.addEventListener('DOMContentLoaded', () => {
+  chatInput.focus();
+});
+
 chatButton.addEventListener('click', () => {
   const isVisible = chatBox.style.display === 'flex';
   chatBox.style.display = isVisible ? 'none' : 'flex';
-  chatBox.setAttribute('aria-hidden', isVisible ? 'true' : 'false');
-  if (!isVisible) {
-    chatBox.style.flexDirection = 'column';
-    chatInput.focus();
-  }
+  chatBox.setAttribute('aria-hidden', isVisible ? 'true':'false');
+  if(!isVisible){ chatBox.style.flexDirection='column'; chatInput.focus(); }
 });
-chatClose.addEventListener('click', () => {
-  chatBox.style.display = 'none';
-  chatBox.setAttribute('aria-hidden', 'true');
-});
+chatClose.addEventListener('click',()=>{chatBox.style.display='none'; chatBox.setAttribute('aria-hidden','true');});
 
-chatInput.addEventListener('keypress', function(e) {
-  if (e.key === 'Enter' && chatInput.value.trim() !== '') {
-    const userMsg = document.createElement('div');
-    userMsg.textContent = "You: " + chatInput.value;
-    chatMessages.appendChild(userMsg);
-
-    // If EmailJS properly configured, send message
-    if (window.emailjs) {
-      emailjs.send("YOUR_SERVICE_ID","YOUR_TEMPLATE_ID",{
-        message: chatInput.value,
-        to_email: "css.demo.web@gmail.com"
-      }).catch(err => console.warn('Email send failed', err));
-    }
-
-    const reply = document.createElement('div');
-    reply.textContent = "Support: Thank you for your message! We'll get back to you via email.";
-    reply.style.color = "#00e5ff";
-    chatMessages.appendChild(reply);
-
-    // Scroll to bottom
+chatInput.addEventListener('keypress', function(e){
+  if(e.key==='Enter' && chatInput.value.trim()!==''){
+    const userMsg=document.createElement('div'); userMsg.textContent="You: "+chatInput.value; chatMessages.appendChild(userMsg);
+    if(window.emailjs) emailjs.send("YOUR_SERVICE_ID","YOUR_TEMPLATE_ID",{message:chatInput.value,to_email:"css.demo.web@gmail.com"}).catch(err=>console.warn('Email send failed', err));
+    const reply=document.createElement('div'); reply.textContent="Support: Thank you for your message! We'll get back to you via email."; reply.style.color="#00e5ff"; chatMessages.appendChild(reply);
     chatMessages.scrollTop = chatMessages.scrollHeight;
-    chatInput.value = '';
+    chatInput.value='';
   }
 });
 
-/* =========== QR Scanner setup (dynamic import) =========== */
-let qrScanner = null;
+/* ========== QR Scanner ========== */
+import QrScanner from "https://unpkg.com/qr-scanner@1.4.2/qr-scanner.min.js";
+
+/* ========== QR SCANNER ========== */
 const featureLink = document.getElementById('feature-link');
 const qrModal = document.getElementById('qr-modal');
 const qrVideo = document.getElementById('qr-video');
 const qrMsg = document.getElementById('qr-msg');
-const qrBtnClose = document.getElementById('qr-btn-close');
+let qrScanner = null;
 const REQUIRED_CODE = "AUTHORIZED_USER";
 
-async function startQrScanner() {
-  // dynamic import from unpkg
-  try {
-    const module = await import('https://unpkg.com/qr-scanner@1.4.2/qr-scanner.min.js');
-    const QrScanner = module.default ?? module.QrScanner ?? module;
-    qrScanner = new QrScanner(qrVideo, result => {
-      if (!result) return;
-      if (String(result).trim() === REQUIRED_CODE) {
-        qrMsg.style.color = '#bfffcf';
-        qrMsg.textContent = 'QR accepted — Redirecting...';
-        try { qrScanner.stop(); } catch(e){}
-        setTimeout(()=> closeQRModal(true), 400);
-      } else {
-        qrMsg.style.color = '#ffb3b3';
-        qrMsg.textContent = 'Unauthorized QR. Try again.';
-      }
-    }, { preferredCamera: 'environment' });
-    await qrScanner.start();
-    qrMsg.style.color = '#00e5ff';
-    qrMsg.textContent = 'Exclusive only for authorized users.';
-  } catch(err) {
-    console.warn('QR Scanner error', err);
-    qrMsg.style.color = '#ffb3b3';
-    qrMsg.textContent = 'Camera not accessible.';
-  }
-}
+function openQRModal(){
+  qrModal.style.display='flex';
+  qrModal.setAttribute('aria-hidden','false');
+  qrMsg.style.color='#00e5ff';
+  qrMsg.textContent='Initializing camera...';
 
-featureLink.addEventListener('click', (e) => {
-  e.preventDefault();
-  qrModal.style.display = 'flex';
-  qrModal.setAttribute('aria-hidden', 'false');
-  qrMsg.style.color = '#00e5ff';
-  qrMsg.textContent = 'Initializing camera...';
-  // ensure previous scanner destroyed
-  try { qrScanner && qrScanner.destroy(); } catch(e){}
-  qrScanner = null;
-  startQrScanner();
-});
+  // Destroy previous scanner if exists
+  if(qrScanner){ qrScanner.destroy(); qrScanner=null; }
 
-function closeQRModal(success=false){
-  try { qrScanner && qrScanner.stop(); qrScanner && qrScanner.destroy(); } catch(e){}
-  qrScanner = null;
-  qrModal.style.display = 'none';
-  qrModal.setAttribute('aria-hidden', 'true');
-  if(success){ window.location.href = 'features.html'; }
-}
-qrBtnClose.addEventListener('click', () => closeQRModal(false));
-
-/* =========== FEATURES TTS (SpeechSynthesis) =========== */
-const speakButtons = document.querySelectorAll('.feature-card .btn-speak');
-
-function supportsTTS() {
-  return 'speechSynthesis' in window && typeof window.speechSynthesis.speak === 'function';
-}
-
-function stopSpeaking() {
-  if (supportsTTS() && window.speechSynthesis.speaking) {
-    window.speechSynthesis.cancel();
-  }
-}
-
-function speakText(text) {
-  if (!supportsTTS()) {
-    alert('Text-to-Speech is not supported in this browser.');
-    return;
-  }
-  stopSpeaking();
-  const utter = new SpeechSynthesisUtterance(text);
-  // optional: tune voice parameters
-  utter.rate = 1; // speed (0.1 - 10)
-  utter.pitch = 1; // pitch (0 - 2)
-  // choose a voice if you want (left to browser default)
-  // const voices = window.speechSynthesis.getVoices();
-  // utter.voice = voices.find(v=>v.lang.startsWith('en')) || voices[0];
-  window.speechSynthesis.speak(utter);
-}
-
-/* Attach click handlers to Speak buttons */
-speakButtons.forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    const card = btn.closest('.feature-card');
-    // prefer explicit data attribute text, otherwise read visible heading+paragraph
-    const explicit = card.getAttribute('data-feature-text');
-    let textToSpeak = explicit && explicit.trim().length ? explicit.trim() : (
-      (card.querySelector('h3')?.textContent || '') + '. ' + (card.querySelector('p')?.textContent || '')
-    );
-    // update aria-pressed
-    const isSpeaking = btn.getAttribute('aria-pressed') === 'true';
-    // toggle behavior: stop if already speaking
-    if (isSpeaking) {
-      stopSpeaking();
-      btn.setAttribute('aria-pressed', 'false');
-      btn.dataset.speaking = 'false';
-      return;
+  // Initialize QR scanner with autofocus
+  qrScanner = new QrScanner(qrVideo, result => {
+    if(!result) return;
+    const scanned = String(result).trim();
+    if(scanned === REQUIRED_CODE){
+      qrMsg.style.color='#bfffcf';
+      qrMsg.textContent='QR accepted — Access granted! Redirecting...';
+      try{ qrScanner.stop(); }catch(e){}
+      setTimeout(()=> closeQRModal(true), 350);
+    } else {
+      qrMsg.style.color='#ffb3b3';
+      qrMsg.textContent='Unauthorized QR. Try again.';
     }
-    // set pressed for visual hint
-    document.querySelectorAll('.btn-speak').forEach(b => b.setAttribute('aria-pressed','false'));
-    btn.setAttribute('aria-pressed','true');
-    btn.dataset.speaking = 'true';
-    speakText(textToSpeak);
-    // clear pressed state when finished
-    const onEnd = () => {
-      btn.setAttribute('aria-pressed','false');
-      btn.dataset.speaking = 'false';
-      window.speechSynthesis.removeEventListener('end', onEndWrapped);
-    };
-    // some browsers fire 'end' on utterance; to be safe we add both utter.onend and global listener
-    const onEndWrapped = () => onEnd();
-    // attach when utterance ends
-    // can't access the utter directly here; instead poll for speaking state
-    const interval = setInterval(() => {
-      if (!window.speechSynthesis.speaking) {
-        btn.setAttribute('aria-pressed','false');
-        btn.dataset.speaking = 'false';
-        clearInterval(interval);
-      }
-    }, 250);
+  }, {
+    highlightScanRegion: true,       // Highlights the scanning area
+    highlightCodeOutline: true,      // Highlights detected QR code
+    preferredCamera: 'environment'   // Uses back camera on mobile devices
   });
-});
 
-/* Stop any speaking if user navigates away */
-window.addEventListener('beforeunload', () => stopSpeaking());
+  // Start scanner
+  qrScanner.start()
+    .then(() => { qrMsg.textContent='Scan the QR code now'; })
+    .catch(err => { 
+      qrMsg.style.color='#ffb3b3'; 
+      qrMsg.textContent='Camera not accessible.'; 
+    });
+}
+
+// Close modal function
+function closeQRModal(success=false){
+  try{ qrScanner && qrScanner.stop(); qrScanner && qrScanner.destroy(); }catch(e){}
+  qrScanner = null;
+  qrModal.style.display='none';
+  qrModal.setAttribute('aria-hidden','true');
+  if(success){ window.location.href='features.html'; }
+}
+
+// Trigger modal and scanner on click
+featureLink.addEventListener('click', e => {
+  e.preventDefault();
+  openQRModal();
+});
 </script>
+
+<!-- Additional EmailJS Script -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script type="text/javascript">
+   (function(){
+      emailjs.init({
+        publicKey: "YOUR_PUBLIC_KEY",
+      });
+   })();
+</script>
+
+<!-- Voice Recognition Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Insert voice UI elements
+  const voiceBtnMarkup = '<button id="voice-btn" aria-pressed="false" title="Start voice recognition">🎙️ Start Listening</button><div id="transcript" role="status" aria-live="polite"></div>';
+  document.body.insertAdjacentHTML('beforeend', voiceBtnMarkup);
+
+  const voiceBtn = document.getElementById('voice-btn');
+  const transcriptEl = document.getElementById('transcript');
+  const chatInputEl = document.getElementById('chat-input');
+
+  console.log('[Voice] Setup started. Button:', !!voiceBtn, 'Transcript:', !!transcriptEl);
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  
+  if (!SpeechRecognition) {
+    console.warn('[Voice] SpeechRecognition not supported');
+    voiceBtn.addEventListener('click', () => {
+      transcriptEl.style.display = 'block';
+      transcriptEl.textContent = 'Voice recognition not supported. Use Chrome or Edge.';
+      setTimeout(() => { transcriptEl.style.display = 'none'; }, 4000);
+    });
+  } else {
+    console.log('[Voice] SpeechRecognition available');
+    const recognizer = new SpeechRecognition();
+    recognizer.continuous = false;
+    recognizer.interimResults = true;
+    recognizer.lang = 'en-US';
+
+    let isListening = false;
+    let finalTranscript = '';
+
+    recognizer.addEventListener('start', () => {
+      console.log('[Voice] Start event fired');
+      isListening = true;
+      finalTranscript = '';
+      voiceBtn.classList.add('listening');
+      voiceBtn.setAttribute('aria-pressed', 'true');
+      voiceBtn.textContent = '🎙️ Listening...';
+      transcriptEl.style.display = 'block';
+      transcriptEl.textContent = 'Listening...';
+    });
+
+    recognizer.addEventListener('result', (event) => {
+      console.log('[Voice] Result event, isFinal:', event.results[event.results.length - 1].isFinal);
+      let interim = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript + ' ';
+        } else {
+          interim += transcript;
+        }
+      }
+      transcriptEl.textContent = finalTranscript + (interim ? ' (' + interim + ')' : '');
+      if (chatInputEl && finalTranscript.trim()) {
+        chatInputEl.value = finalTranscript.trim();
+      }
+    });
+
+    // Handle voice commands
+    recognizer.addEventListener('end', function handleCommands() {
+      const command = finalTranscript.toLowerCase().trim();
+      console.log('[Voice] Processing command:', command);
+
+      // Helper function for voice feedback
+      function speakFeedback(message) {
+        try {
+          window.speechSynthesis.cancel(); // Clear any previous speech
+          const utterance = new SpeechSynthesisUtterance(message);
+          utterance.rate = 0.95;
+          utterance.volume = 1.0;
+          utterance.pitch = 1.0;
+          console.log('[Voice] Speaking feedback:', message);
+          
+          utterance.onstart = () => console.log('[Voice] Speech started');
+          utterance.onend = () => console.log('[Voice] Speech ended');
+          utterance.onerror = (e) => console.error('[Voice] Speech error:', e);
+          
+          window.speechSynthesis.speak(utterance);
+        } catch (e) {
+          console.error('[Voice] Feedback error:', e);
+        }
+      }
+
+      // Navigation commands
+      if (command.includes('home')) {
+        window.location.hash = '#home';
+        transcriptEl.textContent = '✓ Going to home';
+        speakFeedback('Going to home page');
+      } else if (command.includes('feature') || command.includes('features')) {
+        window.location.href = 'features.html';
+        transcriptEl.textContent = '✓ Opening features';
+        speakFeedback('Opening features page');
+      } else if (command.includes('model') || command.includes('explore')) {
+        window.location.hash = '#models';
+        transcriptEl.textContent = '✓ Going to models';
+        speakFeedback('Going to models section');
+      } else if (command.includes('about')) {
+        window.location.href = 'about.html';
+        transcriptEl.textContent = '✓ Opening about';
+        speakFeedback('Opening about page');
+      } else if (command.includes('blog')) {
+        window.location.href = 'blog.html';
+        transcriptEl.textContent = '✓ Opening blog';
+        speakFeedback('Opening blog page');
+      }
+      // Chat commands
+      else if (command.includes('chat') || command.includes('support')) {
+        chatButton.click();
+        transcriptEl.textContent = '✓ Opening chat';
+        speakFeedback('Opening support chat');
+      } else if (command.includes('send') && chatInputEl.value) {
+        chatInput.dispatchEvent(new KeyboardEvent('keypress', { key: 'Enter' }));
+        transcriptEl.textContent = '✓ Message sent';
+        speakFeedback('Message sent successfully');
+      }
+      // Scroll commands
+      else if (command.includes('scroll down')) {
+        window.scrollBy(0, 300);
+        transcriptEl.textContent = '✓ Scrolling down';
+        speakFeedback('Scrolling down');
+      } else if (command.includes('scroll up')) {
+        window.scrollBy(0, -300);
+        transcriptEl.textContent = '✓ Scrolling up';
+        speakFeedback('Scrolling up');
+      } else if (command.includes('scroll') && command.includes('top')) {
+        window.scrollTo(0, 0);
+        transcriptEl.textContent = '✓ Scrolling to top';
+        speakFeedback('Scrolling to top');
+      }
+      // Info commands
+      else if (command.includes('refresh') || command.includes('reload')) {
+        speakFeedback('Refreshing page');
+        setTimeout(() => location.reload(), 500);
+        transcriptEl.textContent = '✓ Refreshing page';
+      } else if (finalTranscript.trim() && !command.includes('error')) {
+        transcriptEl.textContent = '✓ Text added to input';
+        speakFeedback('Text added to chat input');
+      }
+      
+      // Reset and hide transcript
+      isListening = false;
+      voiceBtn.classList.remove('listening');
+      voiceBtn.setAttribute('aria-pressed', 'false');
+      voiceBtn.textContent = '🎙️ Listening Enabled (Auto)';
+      setTimeout(() => { transcriptEl.style.display = 'none'; }, 2500);
+    });
+
+    recognizer.addEventListener('error', (event) => {
+      console.error('[Voice] Error:', event.error);
+      transcriptEl.style.display = 'block';
+      transcriptEl.textContent = 'Error: ' + event.error;
+      setTimeout(() => { transcriptEl.style.display = 'none'; }, 3000);
+    });
+
+    // Auto-start voice recognition when page loads (for accessibility)
+    function autoStartVoiceRecognition() {
+      console.log('[Voice] Auto-starting recognition for accessibility');
+      if (!isListening) {
+        finalTranscript = '';
+        try {
+          recognizer.start();
+          // Speak notification that listening has started
+          setTimeout(() => {
+            const utterance = new SpeechSynthesisUtterance('Voice recognition started. You can now speak your commands.');
+            utterance.rate = 0.9;
+            utterance.volume = 1.0;
+            utterance.pitch = 1.0;
+            console.log('[Voice] Speaking: Voice recognition started');
+            window.speechSynthesis.cancel(); // Cancel any pending speech
+            window.speechSynthesis.speak(utterance);
+          }, 300);
+        } catch (e) {
+          console.error('[Voice] Auto-start error:', e);
+        }
+      }
+    }
+
+    // Start listening automatically after a short delay
+    setTimeout(autoStartVoiceRecognition, 800);
+
+    voiceBtn.addEventListener('click', () => {
+      console.log('[Voice] Button clicked. isListening:', isListening);
+      if (!isListening) {
+        finalTranscript = '';
+        try {
+          recognizer.start();
+        } catch (e) {
+          console.error('[Voice] Start error:', e);
+        }
+      } else {
+        recognizer.stop();
+      }
+    });
+
+    // Allow voice commands to restart recognition automatically
+    recognizer.addEventListener('end', function autoRestart() {
+      console.log('[Voice] Auto-restarting recognition...');
+      setTimeout(() => {
+        if (!isListening) {
+          finalTranscript = '';
+          try {
+            recognizer.start();
+          } catch (e) {
+            console.error('[Voice] Auto-restart error:', e);
+          }
+        }
+      }, 1000);
+    });
+
+    console.log('[Voice] All setup complete - Auto-start enabled for accessibility');
+  }
+});
+</script>
+
 </body>
 </html>
