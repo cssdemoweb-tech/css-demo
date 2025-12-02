@@ -1,69 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Blind Mode Navigation</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Blind Mode Navigation + Accessibility V3</title>
+
 <style>
-  body { font-family: 'Arial', sans-serif; background: linear-gradient(135deg,#0f2027,#203a43,#2c5364); color:#fff; line-height:1.6; margin:0; padding:15px; }
-  h1 { color:#00e5ff; text-align:center; font-size:2rem; margin-bottom:20px; text-shadow:2px 2px 6px #000; }
+/* ---------- GLOBAL ---------- */
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:#fff; margin:0; padding:15px; line-height:1.6;
+}
+h1 { color:#00e5ff; text-align:center; font-size:2rem; margin-bottom:20px; text-shadow:2px 2px 6px #000; }
 
-  /* HAMBURGER MENU */
-  #hamburger { display:none; position:fixed; top:15px; right:15px; width:30px; height:25px; flex-direction:column; justify-content:space-between; cursor:pointer; z-index:1000; }
-  .bar { height:4px; width:100%; background-color:#00e5ff; border-radius:2px; }
-  #mobile-menu { display:none; position:fixed; top:60px; right:15px; background:rgba(0,0,0,0.85); padding:15px; border-radius:10px; box-shadow:0 0 15px rgba(0,229,255,0.5); z-index:999; }
-  #mobile-menu div { margin:10px 0; cursor:pointer; }
-  #mobile-menu div:hover { color:#ffea00; }
+/* ---------- HAMBURGER ---------- */
+#hamburger { display:none; position:fixed; top:15px; right:15px; width:30px; height:25px; flex-direction:column; justify-content:space-between; cursor:pointer; z-index:1000; }
+.bar { height:4px; width:100%; background-color:#00e5ff; border-radius:2px; }
+#mobile-menu { display:none; position:fixed; top:60px; right:15px; padding:15px; border-radius:10px; background:rgba(0,0,0,0.85); box-shadow:0 0 15px rgba(0,229,255,0.5); }
+#mobile-menu div { margin:10px 0; cursor:pointer; }
+#mobile-menu div:hover { color:#ffea00; }
 
-  /* CONTROLS PANEL */
-  #controls { max-width:900px; margin:0 auto 20px auto; padding:15px; background:rgba(255,255,255,0.05); border-radius:12px; box-shadow:0 0 10px rgba(0,0,0,0.5); color:#fff; text-align:center; }
-  #controls h2 { color:#00e5ff; margin-bottom:10px; font-size:1.5rem; text-shadow:1px 1px 5px #000; }
-  #controls p { margin:6px 0; font-size:1rem; }
-  #controls strong { color:#ffea00; }
+/* ---------- CONTROLS PANEL ---------- */
+#controls { max-width:900px; margin:0 auto 20px auto; padding:15px; background:rgba(255,255,255,0.05); border-radius:12px; text-align:center; }
+#controls strong{ color:#ffea00; }
 
-  /* NAVIGATION GRID */
-  #nav-container { display:grid; grid-template-columns:repeat(4,1fr); grid-auto-rows:minmax(60px,auto); gap:10px; max-width:1000px; margin:0 auto; }
-  .nav-item { padding:8px; font-size:0.9rem; border-radius:8px; background:rgba(255,255,255,0.05); text-align:center; cursor:pointer; box-shadow:0 2px 4px rgba(0,0,0,0.3); transition: transform 0.2s, background 0.2s; }
-  .nav-item:hover { background:rgba(255,255,255,0.1); transform:translateY(-1px); }
-  .highlight { outline:2px solid #00e5ff; background:rgba(0,229,255,0.1); }
+/* ---------- NAV GRID ---------- */
+#nav-container { display:grid; grid-template-columns:repeat(4,1fr); grid-auto-rows:minmax(60px,auto); gap:10px; max-width:1000px; margin:0 auto; }
+.nav-item { padding:8px; font-size:0.9rem; border-radius:8px; cursor:pointer; text-align:center; background:rgba(255,255,255,0.05); transition:.2s; }
+.nav-item:hover { background:rgba(255,255,255,0.1); transform:translateY(-1px); }
+.highlight { outline:2px solid #00e5ff; background:rgba(0,229,255,0.1); }
 
-  /* SUBTITLE */
-  #subtitle { margin-top:20px; font-size:1.2rem; color:#00ff99; min-height:3em; text-align:center; max-width:90%; margin-left:auto;margin-right:auto; line-height:1.5; background:rgba(0,0,0,0.3); padding:12px; border-radius:12px; box-shadow:0 0 15px rgba(0,255,153,0.4); }
-  .word { transition: color 0.15s, font-weight 0.15s; }
-  .highlight-word { color:#ffea00; font-weight:bold; text-shadow:1px 1px 3px #000; }
+/* ---------- SUBTITLES ---------- */
+#subtitle { margin-top:20px; font-size:1.2rem; line-height:1.5; color:#00ff99; padding:12px; min-height:3em; max-width:90%; margin-left:auto; margin-right:auto; border-radius:12px; background:rgba(0,0,0,0.3); }
+.word { transition:.15s; }
+.highlight-word { color:#ffea00; font-weight:700; }
 
-  /* RESPONSIVE */
-  @media(max-width:900px){ #nav-container{grid-template-columns:repeat(3,1fr);} .nav-item{font-size:0.85rem;padding:6px;} #hamburger{display:flex;} }
-  @media(max-width:600px){ #nav-container{grid-template-columns:repeat(2,1fr);} .nav-item{font-size:0.8rem;padding:5px;} h1{font-size:1.7rem;} #controls h2{font-size:1.3rem;} #controls p{font-size:0.95rem;} #subtitle{font-size:1rem;padding:8px;} }
+/* ---------- RESPONSIVE ---------- */
+@media(max-width:900px){ #nav-container{grid-template-columns:repeat(3,1fr);} #hamburger{display:flex;} }
+@media(max-width:600px){ #nav-container{grid-template-columns:repeat(2,1fr);} #subtitle{font-size:1rem;padding:8px;} }
+
+/* ---------- DYSLEXIA MODE ---------- */
+.dyslexia-mode {
+  background: #FFF8E1 !important;
+  color: #333 !important;
+  font-family: "OpenDyslexic", Arial, sans-serif !important;
+  letter-spacing: 0.5px;
+  word-spacing: 3px;
+}
+.dyslexia-mode #subtitle {
+  background: rgba(0,0,0,0.05) !important;
+  color: #222 !important;
+}
+
+/* ---------- ADHD MODE ---------- */
+.adhd-mode body, .adhd-mode .nav-item {
+  outline: 3px solid #ffea00 !important;
+  transition: 0ms !important;
+  background: rgba(255,255,0,0.15) !important;
+  font-weight: 700;
+}
+.adhd-mode #subtitle {
+  background: rgba(255,255,0,0.2) !important;
+  color: #000 !important;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* ---------- HIGH CONTRAST MODE ---------- */
+.contrast-mode {
+  background: #000 !important;
+  color: #ff0 !important;
+}
+.contrast-mode .nav-item {
+  background: #000 !important;
+  color: #ff0 !important;
+  border: 2px solid #ff0 !important;
+}
+.contrast-mode #subtitle {
+  background: #111 !important;
+  color: #ff0 !important;
+}
+
+/* ---------- COLORBLIND MODE ---------- */
+.colorblind-mode .nav-item {
+  background: #003f5c !important;
+  color: #ffa600 !important;
+  border: 2px solid #ffa600 !important;
+}
+
+/* ---------- BIONIC READING MODE ---------- */
+.bionic-mode .word::first-letter {
+  font-weight: 900 !important;
+}
+
+/* ---------- ACCESSIBILITY BUTTONS ---------- */
+.acc-btn { margin:5px; padding:8px 12px; border-radius:10px; font-size:0.9rem; cursor:pointer; background:#00e5ff; border:none; }
 </style>
 </head>
 <body>
 
 <h1>Blind Mode Navigation</h1>
 
-<!-- HAMBURGER MENU -->
-<div id="hamburger">
-  <div class="bar"></div>
-  <div class="bar"></div>
-  <div class="bar"></div>
+<!-- HAMBURGER -->
+<div id="hamburger" aria-label="Menu" role="button" tabindex="0">
+  <div class="bar"></div><div class="bar"></div><div class="bar"></div>
 </div>
-<div id="mobile-menu">
-  <div onclick="window.location.href='home.html'">Home</div>
-  <div onclick="window.location.href='about.html'">About</div>
-  <div onclick="window.location.href='blog.html'">Blog</div>
+<div id="mobile-menu" aria-hidden="true">
+  <div onclick="location.href='home.html'">Home</div>
+  <div onclick="location.href='about.html'">About</div>
+  <div onclick="location.href='blog.html'">Blog</div>
 </div>
 
-<!-- CONTROLS PANEL -->
+<!-- CONTROLS -->
 <div id="controls">
   <h2>Navigation Controls</h2>
-  <p><strong>Arrow Up / Arrow Left:</strong> Previous item</p>
-  <p><strong>Arrow Down / Arrow Right:</strong> Next item</p>
-  <p><strong>Spacebar:</strong> Press 3 times to ask "continue or leave"</p>
-  <p><strong>Mobile:</strong> 2 taps → skip confirmation, 1 tap yes, 2 taps no, 3 taps → stop reading</p>
+  <p><strong>Arrow Keys:</strong> Navigate items</p>
+  <p><strong>Mobile:</strong> Double-tap to skip (next), triple-tap to stop reading</p>
 </div>
 
-<!-- NAVIGATION GRID -->
-<div id="nav-container">
+<!-- NAV GRID -->
+<div id="nav-container" aria-live="polite">
   <div class="nav-item" tabindex="0">Motherboard</div>
   <div class="nav-item" tabindex="0">CPU</div>
   <div class="nav-item" tabindex="0">GPU</div>
@@ -78,95 +135,254 @@
   <div class="nav-item" tabindex="0">Motherboard Chipset</div>
 </div>
 
-<div id="subtitle"></div>
+<div id="subtitle" aria-atomic="true"></div>
+
+<!-- DYSLEXIA MODE BUTTON -->
+<button id="dyslexia-btn" style="
+  position:fixed; bottom:20px; right:20px;
+  padding:10px 15px; font-size:1rem;
+  border-radius:10px; background:#ffea00;
+  border:none; cursor:pointer; z-index:999;">
+  Dyslexia Mode
+</button>
 
 <script>
-let navLinks = Array.from(document.querySelectorAll(".nav-item"));
-let currentNavIndex=0, pendingNavIndex=null, confirmationActive=false, spacePressCount=0, askingLeave=false;
-let navigationStarted = false; // NEW: navigation only starts after user confirms
-const subtitleEl = document.getElementById("subtitle");
+const navLinks = Array.from(document.querySelectorAll('.nav-item'));
+let currentNavIndex = 0;
+let navigationStarted = false;
+const subtitleEl = document.getElementById('subtitle');
 
-const navContent = {
-  "Motherboard":["Motherboards evolved from simple backplanes into complex PCBs. Main parts include CPU socket, RAM slots, PCIe slots, chipset, power connectors, SATA and USB ports."],
-  "CPU":["The CPU is the brain of computers. Main parts include cores, cache, control unit, and arithmetic logic unit."],
-  "GPU":["GPU handles graphics and complex calculations. Enhances visual experiences and accelerates tasks like AI, gaming, and rendering."],
-  "RAM":["RAM is volatile memory for active data access. Temporarily stores data for fast CPU access."],
-  "Power Supply":["Power Supply converts electricity for components. Ensures stability and efficiency."],
-  "Hard Drive":["Hard Drives are magnetic storage devices. Provide large capacity at lower cost."],
-  "SSD":["Solid State Drives store data using flash memory. Faster, durable, and silent."],
-  "Cooling System":["Cooling systems maintain optimal temperatures. Includes fans, liquid cooling, heat sinks."],
-  "Network Card":["Network Cards connect computers to networks. Handle data transmission and protocols."],
-  "Sound Card":["Sound Cards process audio signals. Improve sound quality and provide I/O interfaces."],
-  "Optical Drive":["Optical Drives read/write CDs, DVDs, Blu-ray. Used for software installation and media."],
-  "Motherboard Chipset":["Chipset manages communication between CPU, memory, and peripherals. Determines system features."]
-};
-
-// Highlight first item
-highlightNav(currentNavIndex,true);
-
-// HAMBURGER MENU
+// Mobile menu toggle
 const hamburger = document.getElementById('hamburger');
 const mobileMenu = document.getElementById('mobile-menu');
-hamburger.addEventListener('click',()=>{ mobileMenu.style.display = mobileMenu.style.display==='flex'?'none':'flex'; mobileMenu.style.flexDirection='column'; });
-
-// ===================== START READING PROMPT =====================
-function askStartReading() {
-    speakText("Do you want to start reading? Tap four times on mobile or press any arrow key on your keyboard.");
-
-    // Keyboard arrow key
-    function onKeyPress(e) {
-        if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)) {
-            navigationStarted = true;
-            speakText("Starting navigation.");
-            document.removeEventListener("keydown", onKeyPress);
-        }
-    }
-    document.addEventListener("keydown", onKeyPress);
-
-    // Mobile tap
-    let startTapCount = 0;
-    function onTouch(e) {
-        startTapCount++;
-        if(startTapCount === 4) {
-            navigationStarted = true;
-            speakText("Starting navigation.");
-            document.removeEventListener("touchstart", onTouch);
-        }
-    }
-    document.addEventListener("touchstart", onTouch);
-}
-
-// Call on page load
-askStartReading();
-
-// ===================== NAVIGATION LOGIC =====================
-
-// MOBILE TAP NAVIGATION
-let tapCount=0, tapTimeout=null, skipConfirmation=false;
-document.addEventListener('touchstart', function(e){
-  if(!navigationStarted) return;
-  if(e.touches.length>1) return;
-  tapCount++;
-  if(tapTimeout) clearTimeout(tapTimeout);
-  tapTimeout = setTimeout(()=>{
-    if(skipConfirmation){
-      if(tapCount===1){ speakText("Skipping to next item."); currentNavIndex=(currentNavIndex+1)%navLinks.length; highlightNav(currentNavIndex,true); }
-      else if(tapCount===2){ speakText("Skip canceled. Staying on current item."); }
-      skipConfirmation=false;
-    } else {
-      if(tapCount===2){ speakText("Do you really want to skip? Tap once for Yes, twice for No."); skipConfirmation=true; }
-      if(tapCount===3){ speakText("Reading stopped. Tap twice to continue."); speechSynthesis.cancel(); }
-    }
-    tapCount=0;
-  },400);
+hamburger.addEventListener('click', () => {
+  const open = mobileMenu.style.display === 'block';
+  mobileMenu.style.display = open ? 'none' : 'block';
+  mobileMenu.setAttribute('aria-hidden', open ? 'true' : 'false');
 });
 
-function askConfirmation(index){ confirmationActive=true; const el=navLinks[index]; speakText(`Do you want to proceed? ${el.innerText}? Right/Down confirm, Left/Up cancel.`);}
-function highlightNav(index,autoContinue=false){ navLinks.forEach(l=>l.classList.remove("highlight")); const el=navLinks[index]; el.classList.add("highlight"); const content=navContent[el.innerText]; if(content) readSegments(content,autoContinue); else speakText(el.innerText);}
-function readSegments(segments,autoContinue=false){ const fullText=segments.join(" "); const sentences=fullText.match(/[^\.!\?]+[\.!\?]?/g)||[fullText]; function speakSentence(i){ if(i>=sentences.length){ subtitleEl.innerText=""; if(autoContinue && currentNavIndex<navLinks.length-1){currentNavIndex++; highlightNav(currentNavIndex,true);} return;} const sentence=sentences[i].trim(); const words=sentence.split(" "); subtitleEl.innerHTML=words.map(w=>`<span class="word">${w}</span>`).join(" "); const utter=new SpeechSynthesisUtterance(sentence); utter.rate=1.0; let currentWordIndex=0; utter.onboundary=(event)=>{ if(event.name==='word'||event.charIndex!==undefined){ const spans=subtitleEl.querySelectorAll("span.word"); spans.forEach((s,j)=>s.classList.toggle("highlight-word",j===currentWordIndex)); currentWordIndex++; } }; utter.onend=()=>speakSentence(i+1); speechSynthesis.speak(utter); } speechSynthesis.cancel(); speakSentence(0);}
-function speakText(text){ const utter=new SpeechSynthesisUtterance(text); utter.rate=1.0; subtitleEl.innerText=text; utter.onend=()=>subtitleEl.innerText=""; speechSynthesis.cancel(); speechSynthesis.speak(utter);}
-</script>
+// Vibration helper
+function vibrate(pattern) { if(navigator.vibrate) navigator.vibrate(pattern); }
 
+// TTS unlock
+function unlockAudioOnce() {
+  if ('speechSynthesis' in window && window.speechSynthesis.paused) {
+    try { window.speechSynthesis.resume(); } catch(e) {}
+  }
+  document.removeEventListener('touchstart', unlockAudioOnce);
+  document.removeEventListener('click', unlockAudioOnce);
+}
+document.addEventListener('touchstart', unlockAudioOnce, { once: true });
+document.addEventListener('click', unlockAudioOnce, { once: true });
+
+// Navigation content
+const navContent = {
+  "Motherboard":["The motherboard is the central printed circuit board that connects all major computer components.","It contains the CPU socket, RAM slots, PCIe slots, chipset, power connectors, BIOS chip, SATA connectors, and USB controllers."],
+  "CPU":["The CPU, or central processing unit, is the primary processor that executes instructions.","It includes processing cores, cache memory, and arithmetic and logic circuits."],
+  "GPU":["The GPU accelerates graphics rendering and parallel computations.","It is essential for gaming, video editing, 3D rendering, and artificial intelligence workloads."],
+  "RAM":["RAM is temporary high speed memory for active tasks.","It allows the CPU to quickly access data in use."],
+  "Power Supply":["The power supply unit converts AC wall power into DC voltages required by the computer.","It powers all components including CPU, GPU, storage, and motherboard."],
+  "Hard Drive":["A hard drive stores data magnetically on spinning platters.","It offers high capacity for low cost but slower speeds."],
+  "SSD":["An SSD uses flash memory to store data.","It is significantly faster, silent, and more reliable than a hard drive."],
+  "Cooling System":["Cooling systems remove heat from components.","They include heat sinks, air coolers, and liquid cooling loops."],
+  "Network Card":["Network cards enable internet and local network connectivity.","They manage data transmission and network protocols."],
+  "Sound Card":["Sound cards process audio input and output signals.","They improve sound quality and add microphone and speaker ports."],
+  "Optical Drive":["Optical drives read and write CDs, DVDs, and Blu-ray discs."],
+  "Motherboard Chipset":["The chipset manages communication between the CPU, RAM, storage, and peripherals."]
+};
+
+// Speak / highlight
+function stopSpeaking() { try{speechSynthesis.cancel();}catch(e){} }
+function speakText(text, opts={}) {
+  stopSpeaking();
+  subtitleEl.textContent=text;
+  const u = new SpeechSynthesisUtterance(text);
+  if(opts.rate) u.rate=opts.rate; if(opts.pitch) u.pitch=opts.pitch;
+  u.onend=()=>{ subtitleEl.textContent=''; };
+  window.speechSynthesis.speak(u);
+}
+function readSegments(segments) {
+  stopSpeaking();
+  const full = segments.join(' ');
+  const sentences = full.match(/[^\.!\?]+[\.!\?]?/g)||[full];
+  let idx=0;
+  function speakNext(){
+    if(idx>=sentences.length){ subtitleEl.innerHTML=''; return; }
+    const sentence = sentences[idx].trim();
+    const words = sentence.split(/\s+/);
+    subtitleEl.innerHTML = words.map(w=>`<span class="word">${w}</span>`).join(' ');
+    const utter = new SpeechSynthesisUtterance(sentence);
+    let wordIndex=0;
+    utter.onboundary=(ev)=>{ if(typeof ev.charIndex==='number'){
+      const spans = subtitleEl.querySelectorAll('.word');
+      spans.forEach((sp,j)=>sp.classList.toggle('highlight-word', j===wordIndex));
+      wordIndex++;
+    }};
+    utter.onend=()=>{ idx++; speakNext(); };
+    window.speechSynthesis.speak(utter);
+  }
+  speakNext();
+}
+
+// Highlight item
+function highlightNav(index, autoSpeak=true){
+  navLinks.forEach(n=>n.classList.remove('highlight'));
+  currentNavIndex=index;
+  const el = navLinks[currentNavIndex];
+  el.classList.add('highlight');
+  vibrate(30);
+  if(autoSpeak){
+    const content=navContent[el.innerText];
+    if(content) readSegments(content);
+    else speakText(el.innerText);
+  }
+}
+
+// Init
+highlightNav(0,false);
+
+// Start prompt
+function askStart(){
+  speakText('Tap or press any arrow key to begin navigation.');
+  function startNow(e){
+    navigationStarted=true;
+    vibrate([40,40,40]);
+    speakText('Navigation started.');
+    document.removeEventListener('keydown',startNow);
+    document.removeEventListener('touchstart',startNow);
+  }
+  document.addEventListener('keydown',startNow);
+  document.addEventListener('touchstart',startNow);
+}
+askStart();
+
+// Keyboard nav
+document.addEventListener('keydown', e=>{
+  if(!navigationStarted) return;
+  if(['ArrowUp','ArrowLeft'].includes(e.key)){
+    currentNavIndex=(currentNavIndex-1+navLinks.length)%navLinks.length;
+    highlightNav(currentNavIndex);
+  }
+  else if(['ArrowDown','ArrowRight'].includes(e.key)){
+    currentNavIndex=(currentNavIndex+1)%navLinks.length;
+    highlightNav(currentNavIndex);
+  }
+});
+
+// Click/tap nav items
+navLinks.forEach((el,i)=>{
+  el.addEventListener('click',()=>{
+    navigationStarted=true;
+    vibrate(40);
+    highlightNav(i,true);
+  });
+  el.addEventListener('keydown', e=>{
+    if(e.key==='Enter'||e.key===' '){
+      e.preventDefault();
+      navigationStarted=true;
+      vibrate(40);
+      highlightNav(i,true);
+    }
+  });
+});
+
+// Mobile double / triple tap
+let tapCount=0, tapTimer=null;
+document.addEventListener('touchstart', e=>{
+  if(e.touches && e.touches.length>1) return;
+  if(!navigationStarted) return;
+  tapCount++; clearTimeout(tapTimer);
+  tapTimer=setTimeout(()=>{
+    if(tapCount===2){
+      vibrate([50,50]);
+      currentNavIndex=(currentNavIndex+1)%navLinks.length;
+      highlightNav(currentNavIndex,true);
+    }
+    else if(tapCount===3){
+      vibrate([200,100,200]);
+      stopSpeaking();
+      subtitleEl.textContent='Reading stopped.';
+    }
+    tapCount=0;
+  },350);
+},{passive:true});
+
+/* =======================
+   DYSLEXIA MODE
+======================= */
+const dysBtn=document.getElementById("dyslexia-btn");
+let dysOn=false;
+function toggleDyslexia(){
+  dysOn=!dysOn;
+  if(dysOn){
+    document.body.classList.add("dyslexia-mode");
+    speakText("Dyslexia mode enabled.");
+  } else {
+    document.body.classList.remove("dyslexia-mode");
+    speakText("Dyslexia mode disabled.");
+  }
+  vibrate(40);
+}
+dysBtn.addEventListener("click",toggleDyslexia);
+document.addEventListener("keydown", e=>{
+  if(e.key==='d'||e.key==='D') toggleDyslexia();
+});
+
+/* =======================
+   ACCESSIBILITY BUTTONS
+======================= */
+const ctrlPanel=document.getElementById("controls");
+ctrlPanel.insertAdjacentHTML("beforeend",`
+  <div style="margin-top:15px;">
+    <button id="btn-adhd" class="acc-btn">ADHD Mode</button>
+    <button id="btn-contrast" class="acc-btn">High Contrast</button>
+    <button id="btn-colorblind" class="acc-btn">Colorblind</button>
+    <button id="btn-bionic" class="acc-btn">Bionic Reading</button>
+  </div>
+`);
+
+let adhdOn=false, contrastOn=false, cbOn=false, bionicOn=false;
+
+function toggleADHD(){ 
+  adhdOn=!adhdOn; 
+  if(adhdOn) document.body.classList.add("adhd-mode"); 
+  else document.body.classList.remove("adhd-mode"); 
+  speakText(`ADHD mode ${adhdOn?"on":"off"}`); 
+  vibrate(60);
+}
+function toggleContrast(){ 
+  contrastOn=!contrastOn; 
+  if(contrastOn) document.body.classList.add("contrast-mode"); 
+  else document.body.classList.remove("contrast-mode"); 
+  speakText(`High contrast ${contrastOn?"on":"off"}`); 
+  vibrate(60);
+}
+function toggleColorblind(){ 
+  cbOn=!cbOn; 
+  if(cbOn) document.body.classList.add("colorblind-mode"); 
+  else document.body.classList.remove("colorblind-mode"); 
+  speakText(`Colorblind mode ${cbOn?"enabled":"disabled"}`); 
+  vibrate(60);
+}
+function toggleBionic(){ 
+  bionicOn=!bionicOn; 
+  if(bionicOn) document.body.classList.add("bionic-mode"); 
+  else document.body.classList.remove("bionic-mode"); 
+  speakText(`Bionic reading ${bionicOn?"activated":"deactivated"}`); 
+  vibrate(60);
+}
+
+document.getElementById("btn-adhd").onclick=toggleADHD;
+document.getElementById("btn-contrast").onclick=toggleContrast;
+document.getElementById("btn-colorblind").onclick=toggleColorblind;
+document.getElementById("btn-bionic").onclick=toggleBionic;
+
+document.addEventListener("keydown", e=>{
+  if(e.key==="a") toggleADHD();
+  if(e.key==="h") toggleContrast();
+  if(e.key==="c") toggleColorblind();
+  if(e.key==="b") toggleBionic();
+});
+</script>
 </body>
 </html>
-
