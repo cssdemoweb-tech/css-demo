@@ -1,389 +1,623 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Blind Mode Navigation + Accessibility V3</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Blind Mode Navigation + Accessibility (Combined)</title>
 
-<style>
-/* ---------- GLOBAL ---------- */
-body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-  color:#fff; margin:0; padding:15px; line-height:1.6;
-}
-h1 { color:#00e5ff; text-align:center; font-size:2rem; margin-bottom:20px; text-shadow:2px 2px 6px #000; }
+  <!-- model-viewer (optional) -->
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js" defer></script>
 
-/* ---------- HAMBURGER ---------- */
-#hamburger { display:none; position:fixed; top:15px; right:15px; width:30px; height:25px; flex-direction:column; justify-content:space-between; cursor:pointer; z-index:1000; }
-.bar { height:4px; width:100%; background-color:#00e5ff; border-radius:2px; }
-#mobile-menu { display:none; position:fixed; top:60px; right:15px; padding:15px; border-radius:10px; background:rgba(0,0,0,0.85); box-shadow:0 0 15px rgba(0,229,255,0.5); }
-#mobile-menu div { margin:10px 0; cursor:pointer; }
-#mobile-menu div:hover { color:#ffea00; }
+  <!-- EmailJS SDK (for chat send) -->
+  <script src="https://cdn.emailjs.com/dist/email.min.js" defer></script>
 
-/* ---------- CONTROLS PANEL ---------- */
-#controls { max-width:900px; margin:0 auto 20px auto; padding:15px; background:rgba(255,255,255,0.05); border-radius:12px; text-align:center; }
-#controls strong{ color:#ffea00; }
+  <style>
+    /* ---------- BASIC RESET ---------- */
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family:Arial, sans-serif;
+      background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+      color:#fff; line-height:1.5; -webkit-font-smoothing:antialiased;
+      padding-top:68px; /* leave space for sticky header */
+    }
 
-/* ---------- NAV GRID ---------- */
-#nav-container { display:grid; grid-template-columns:repeat(4,1fr); grid-auto-rows:minmax(60px,auto); gap:10px; max-width:1000px; margin:0 auto; }
-.nav-item { padding:8px; font-size:0.9rem; border-radius:8px; cursor:pointer; text-align:center; background:rgba(255,255,255,0.05); transition:.2s; }
-.nav-item:hover { background:rgba(255,255,255,0.1); transform:translateY(-1px); }
-.highlight { outline:2px solid #00e5ff; background:rgba(0,229,255,0.1); }
+    /* ---------- STICKY NAVBAR ---------- */
+    .navbar{
+      position:sticky; top:0; z-index:1200;
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px; padding:12px 16px; background:linear-gradient(90deg,#00e5ff11,#00e5ff22);
+      backdrop-filter: blur(6px); box-shadow:0 6px 18px rgba(0,0,0,0.25);
+    }
+    .logo{font-weight:700; font-size:1.15rem; color:#00e5ff}
+    nav[role="navigation"] ul{display:flex; gap:10px; list-style:none; margin:0; padding:0; align-items:center}
+    nav[role="navigation"] a{display:inline-block;padding:8px 10px;border-radius:8px;color:#001;background:transparent;text-decoration:none}
+    nav[role="navigation"] a:focus, nav[role="navigation"] a:hover{background:#00e5ff;color:#000;outline:none}
 
-/* ---------- SUBTITLES ---------- */
-#subtitle { margin-top:20px; font-size:1.2rem; line-height:1.5; color:#00ff99; padding:12px; min-height:3em; max-width:90%; margin-left:auto; margin-right:auto; border-radius:12px; background:rgba(0,0,0,0.3); }
-.word { transition:.15s; }
-.highlight-word { color:#ffea00; font-weight:700; }
+    /* hamburger */
+    #hamburger{display:none;width:36px;height:26px;flex-direction:column;justify-content:space-between;cursor:pointer}
+    #hamburger .bar{height:4px;background:#00e5ff;border-radius:3px;transition:transform .22s,opacity .22s}
+    #hamburger[aria-expanded="true"] .bar:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+    #hamburger[aria-expanded="true"] .bar:nth-child(2){opacity:0}
+    #hamburger[aria-expanded="true"] .bar:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
 
-/* ---------- RESPONSIVE ---------- */
-@media(max-width:900px){ #nav-container{grid-template-columns:repeat(3,1fr);} #hamburger{display:flex;} }
-@media(max-width:600px){ #nav-container{grid-template-columns:repeat(2,1fr);} #subtitle{font-size:1rem;padding:8px;} }
+    /* mobile menu */
+    .menu{display:block}
+    .menu.mobile{display:none; position:absolute; right:12px; top:64px; background:rgba(0,0,0,0.9); padding:10px; border-radius:10px; min-width:160px}
+    .menu.mobile a{display:block;padding:10px 12px;color:#00e5ff}
+    .menu.mobile a:focus{outline:2px solid #00e5ff}
 
-/* ---------- DYSLEXIA MODE ---------- */
-.dyslexia-mode {
-  background: #FFF8E1 !important;
-  color: #333 !important;
-  font-family: "OpenDyslexic", Arial, sans-serif !important;
-  letter-spacing: 0.5px;
-  word-spacing: 3px;
-}
-.dyslexia-mode #subtitle {
-  background: rgba(0,0,0,0.05) !important;
-  color: #222 !important;
-}
+    /* main hero */
+    .hero{padding:52px 16px 36px; text-align:center}
+    .hero h1{color:#00e5ff;font-size:1.9rem;margin-bottom:12px}
+    .hero p{max-width:800px;margin:0 auto 12px;color:#cfeffd}
 
-/* ---------- ADHD MODE ---------- */
-.adhd-mode body, .adhd-mode .nav-item {
-  outline: 3px solid #ffea00 !important;
-  transition: 0ms !important;
-  background: rgba(255,255,0,0.15) !important;
-  font-weight: 700;
-}
-.adhd-mode #subtitle {
-  background: rgba(255,255,0,0.2) !important;
-  color: #000 !important;
-  font-weight: 700;
-  letter-spacing: 1px;
-}
+    /* grid nav */
+    #nav-container{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:1100px;margin:18px auto;padding:12px}
+    .nav-item{background:rgba(255,255,255,0.04);padding:12px;border-radius:10px;text-align:center;cursor:pointer}
+    .nav-item:focus{outline:3px solid #00e5ff}
+    .highlight{outline:3px solid #00e5ff;background:rgba(0,229,255,0.08)}
 
-/* ---------- HIGH CONTRAST MODE ---------- */
-.contrast-mode {
-  background: #000 !important;
-  color: #ff0 !important;
-}
-.contrast-mode .nav-item {
-  background: #000 !important;
-  color: #ff0 !important;
-  border: 2px solid #ff0 !important;
-}
-.contrast-mode #subtitle {
-  background: #111 !important;
-  color: #ff0 !important;
-}
+    /* subtitle/readout */
+    #subtitle{max-width:1100px;margin:12px auto;padding:12px;border-radius:10px;background:rgba(0,0,0,0.3);color:#00ff99;min-height:3em}
+    .word{transition:.12s}
+    .highlight-word{color:#ffea00;font-weight:700}
 
-/* ---------- COLORBLIND MODE ---------- */
-.colorblind-mode .nav-item {
-  background: #003f5c !important;
-  color: #ffa600 !important;
-  border: 2px solid #ffa600 !important;
-}
+    /* feature cards (models) */
+    .models-section{max-width:1100px;margin:20px auto;padding:12px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+    .model-card{background:#fff;color:#000;padding:12px;border-radius:10px;width:280px;box-shadow:0 6px 18px rgba(0,0,0,0.08);text-align:center}
 
-/* ---------- BIONIC READING MODE ---------- */
-.bionic-mode .word::first-letter {
-  font-weight: 900 !important;
-}
+    /* chat */
+    #chat-container{position:fixed;right:18px;bottom:18px;z-index:1400;font-family:inherit}
+    #chat-button{background:linear-gradient(45deg,#00e5ff,#ff00ff);color:#000;padding:10px 14px;border-radius:40px;cursor:pointer;box-shadow:0 8px 22px rgba(0,0,0,0.35)}
+    #chat-box{display:none;width:320px;max-height:420px;background:#111;color:#fff;border-radius:12px;box-shadow:0 12px 36px rgba(0,0,0,0.45);overflow:hidden;margin-top:10px;flex-direction:column}
+    #chat-header{background:#00e5ff;color:#000;padding:10px;display:flex;justify-content:space-between;align-items:center}
+    #chat-messages{padding:10px;flex:1;overflow:auto;min-height:80px;max-height:240px}
+    #chat-input{width:100%;padding:10px;border:none;background:#222;color:#fff;outline:none;border-top:1px solid #333}
 
-/* ---------- ACCESSIBILITY BUTTONS ---------- */
-.acc-btn { margin:5px; padding:8px 12px; border-radius:10px; font-size:0.9rem; cursor:pointer; background:#00e5ff; border:none; }
-</style>
+    /* qr modal */
+    #qr-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:2000;justify-content:center;align-items:center}
+    #qr-modal-content{background:#061221;padding:18px;border-radius:10px;color:#fff;max-width:420px;width:92%;text-align:center}
+    #qr-video{width:300px;height:300px;background:#000;margin:8px auto;border-radius:8px;object-fit:cover}
+    #qr-msg{margin-top:8px;color:#ffb3b3;font-weight:700}
+
+    /* voice button + transcript */
+    #voice-btn{position:fixed;left:18px;bottom:18px;z-index:1600;background:linear-gradient(45deg,#ff5f6d,#ffc371);color:#000;border:none;padding:12px 14px;border-radius:999px;cursor:pointer;font-weight:700;box-shadow:0 8px 20px rgba(0,0,0,0.2)}
+    #voice-btn.listening{box-shadow:0 0 0 6px rgba(255,195,113,0.14);transform:scale(1.03)}
+    #transcript{position:fixed;left:18px;bottom:78px;z-index:1600;min-width:200px;max-width:320px;background:rgba(0,0,0,0.75);color:#fff;padding:10px 12px;border-radius:10px;display:none}
+
+    /* controls panel & accessibility */
+    #controls{max-width:1100px;margin:12px auto;padding:12px;background:rgba(255,255,255,0.03);border-radius:12px;text-align:center}
+    .acc-btn{margin:6px;padding:8px 12px;border-radius:10px;font-size:0.9rem;cursor:pointer;background:#00e5ff;border:none;color:#000}
+
+    /* responsive */
+    @media(max-width:900px){#nav-container{grid-template-columns:repeat(3,1fr)} #hamburger{display:flex} nav[role="navigation"] ul{display:none} .menu.mobile{display:none}}
+    @media(max-width:600px){#nav-container{grid-template-columns:repeat(2,1fr)} .model-card{width:100%}}
+  </style>
 </head>
 <body>
 
-<h1>Blind Mode Navigation</h1>
+  <!-- STICKY NAVBAR -->
+  <header class="navbar" role="banner" aria-label="Main header">
+    <div class="logo" id="logo">BTVTEd-CSS Community</div>
 
-<!-- HAMBURGER -->
-<div id="hamburger" aria-label="Menu" role="button" tabindex="0">
-  <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-</div>
-<div id="mobile-menu" aria-hidden="true">
-  <div onclick="location.href='index.html'">Home</div>
-  <div onclick="location.href='about.html'">About</div>
-  <div onclick="location.href='blog.html'">Blog</div>
-</div>
+    <!-- Desktop menu -->
+    <nav role="navigation" aria-label="Main menu">
+      <ul>
+        <li><a href="#home" id="link-home">Home</a></li>
+        <li><a href="#features" id="link-features">Features</a></li>
+        <li><a href="#models" id="link-models">Models</a></li>
+        <li><a href="#about" id="link-about">About</a></li>
+      </ul>
+    </nav>
 
-<!-- CONTROLS -->
-<div id="controls">
-  <h2>Navigation Controls</h2>
-  <p><strong>Arrow Keys:</strong> Navigate items</p>
-  <p><strong>Mobile:</strong> Double-tap to skip (next), triple-tap to stop reading</p>
-</div>
+    <!-- hamburger for mobile -->
+    <div id="hamburger" aria-label="Open menu" role="button" tabindex="0" aria-expanded="false">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </div>
 
-<!-- NAV GRID -->
-<div id="nav-container" aria-live="polite">
-  <div class="nav-item" tabindex="0">Motherboard</div>
-  <div class="nav-item" tabindex="0">CPU</div>
-  <div class="nav-item" tabindex="0">GPU</div>
-  <div class="nav-item" tabindex="0">RAM</div>
-  <div class="nav-item" tabindex="0">Power Supply</div>
-  <div class="nav-item" tabindex="0">Hard Drive</div>
-  <div class="nav-item" tabindex="0">SSD</div>
-  <div class="nav-item" tabindex="0">Cooling System</div>
-  <div class="nav-item" tabindex="0">Network Card</div>
-  <div class="nav-item" tabindex="0">Sound Card</div>
-  <div class="nav-item" tabindex="0">Optical Drive</div>
-  <div class="nav-item" tabindex="0">Motherboard Chipset</div>
-</div>
+    <!-- mobile menu (clone of nav) -->
+    <nav class="menu mobile" id="mobile-menu" aria-hidden="true" aria-label="Mobile menu">
+      <a href="index.html">Home</a>
+      <a href="#features" id="feature-link">Features (QR)</a>
+      <a href="#models">Models</a>
+      <a href="about.html">About</a>
+    </nav>
+  </header>
 
-<div id="subtitle" aria-atomic="true"></div>
+  <!-- HERO -->
+  <main id="main" role="main">
+    <section class="hero" id="home" aria-labelledby="hero-title">
+      <h1 id="hero-title">Blind Mode Navigation</h1>
+      <p>Explore 3D models, accessibility tools, QR-protected features, voice navigation and quick support chat — all accessible.</p>
+      <p><a href="#models" class="cta-btn" style="background:#00e5ff;color:#000;padding:8px 12px;border-radius:8px">Explore 3D Models</a></p>
+    </section>
 
-<!-- DYSLEXIA MODE BUTTON -->
-<button id="dyslexia-btn" style="
-  position:fixed; bottom:20px; right:20px;
-  padding:10px 15px; font-size:1rem;
-  border-radius:10px; background:#ffea00;
-  border:none; cursor:pointer; z-index:999;">
-  Dyslexia Mode
-</button>
+    <!-- CONTROLS AND ACCESSIBILITY -->
+    <section id="controls" aria-labelledby="controls-title">
+      <h2 id="controls-title">Navigation Controls & Accessibility</h2>
+      <p><strong>Keyboard:</strong> Arrow keys to navigate, Enter to activate. <strong>Mobile:</strong> Double-tap to advance, triple-tap to stop reading.</p>
 
-<script>
-const navLinks = Array.from(document.querySelectorAll('.nav-item'));
-let currentNavIndex = 0;
-let navigationStarted = false;
-const subtitleEl = document.getElementById('subtitle');
+      <div style="margin-top:10px">
+        <button id="dyslexia-btn" class="acc-btn" title="Toggle dyslexia mode">Dyslexia Mode</button>
+        <button id="btn-adhd" class="acc-btn" title="Toggle ADHD mode">ADHD Mode</button>
+        <button id="btn-contrast" class="acc-btn" title="Toggle high contrast">High Contrast</button>
+        <button id="btn-colorblind" class="acc-btn" title="Toggle colorblind-friendly view">Colorblind</button>
+        <button id="btn-bionic" class="acc-btn" title="Toggle bionic reading">Bionic Reading</button>
+      </div>
+    </section>
 
-// Mobile menu toggle
-const hamburger = document.getElementById('hamburger');
-const mobileMenu = document.getElementById('mobile-menu');
-hamburger.addEventListener('click', () => {
-  const open = mobileMenu.style.display === 'block';
-  mobileMenu.style.display = open ? 'none' : 'block';
-  mobileMenu.setAttribute('aria-hidden', open ? 'true' : 'false');
-});
+    <!-- NAV GRID -->
+    <section id="features" aria-labelledby="features-title">
+      <h2 id="features-title" style="position:absolute;left:-9999px">Features</h2>
+      <div id="nav-container" aria-live="polite" role="list">
+        <div class="nav-item" role="listitem" tabindex="0">Motherboard</div>
+        <div class="nav-item" role="listitem" tabindex="0">CPU</div>
+        <div class="nav-item" role="listitem" tabindex="0">GPU</div>
+        <div class="nav-item" role="listitem" tabindex="0">RAM</div>
+        <div class="nav-item" role="listitem" tabindex="0">Power Supply</div>
+        <div class="nav-item" role="listitem" tabindex="0">Hard Drive</div>
+        <div class="nav-item" role="listitem" tabindex="0">SSD</div>
+        <div class="nav-item" role="listitem" tabindex="0">Cooling System</div>
+        <div class="nav-item" role="listitem" tabindex="0">Network Card</div>
+        <div class="nav-item" role="listitem" tabindex="0">Sound Card</div>
+        <div class="nav-item" role="listitem" tabindex="0">Optical Drive</div>
+        <div class="nav-item" role="listitem" tabindex="0">Motherboard Chipset</div>
+      </div>
+    </section>
 
-// Vibration helper
-function vibrate(pattern) { if(navigator.vibrate) navigator.vibrate(pattern); }
+    <!-- readout subtitle (TTS sync) -->
+    <div id="subtitle" aria-live="assertive" aria-atomic="true"></div>
 
-// TTS unlock
-function unlockAudioOnce() {
-  if ('speechSynthesis' in window && window.speechSynthesis.paused) {
-    try { window.speechSynthesis.resume(); } catch(e) {}
-  }
-  document.removeEventListener('touchstart', unlockAudioOnce);
-  document.removeEventListener('click', unlockAudioOnce);
-}
-document.addEventListener('touchstart', unlockAudioOnce, { once: true });
-document.addEventListener('click', unlockAudioOnce, { once: true });
+    <!-- MODELS SECTION (optional model-viewer cards) -->
+    <section class="models-section" id="models" aria-labelledby="models-title">
+      <h2 id="models-title" style="position:absolute;left:-9999px">Explore Components</h2>
+      <div class="model-card" role="article" aria-label="Motherboard model">
+        <model-viewer src="rog_strix_x370-f_motherboard.glb" alt="Motherboard 3D model" camera-controls auto-rotate style="width:100%;height:220px;border-radius:8px;display:block"></model-viewer>
+        <div style="margin-top:8px;color:#00e5ff;font-weight:700">Motherboard</div>
+      </div>
+      <div class="model-card" role="article" aria-label="CPU model">
+        <model-viewer src="free_intel_cpu.glb" alt="CPU 3D model" camera-controls auto-rotate style="width:100%;height:220px;border-radius:8px;display:block"></model-viewer>
+        <div style="margin-top:8px;color:#00e5ff;font-weight:700">CPU</div>
+      </div>
+      <div class="model-card" role="article" aria-label="GPU model">
+        <model-viewer src="nvidia_geforce_rtx_3090_-_gpu.glb" alt="GPU 3D model" camera-controls auto-rotate style="width:100%;height:220px;border-radius:8px;display:block"></model-viewer>
+        <div style="margin-top:8px;color:#00e5ff;font-weight:700">GPU</div>
+      </div>
+    </section>
 
-// Navigation content
-const navContent = {
-  "Motherboard":["The motherboard is the central printed circuit board that connects all major computer components.","It contains the CPU socket, RAM slots, PCIe slots, chipset, power connectors, BIOS chip, SATA connectors, and USB controllers."],
-  "CPU":["The CPU, or central processing unit, is the primary processor that executes instructions.","It includes processing cores, cache memory, and arithmetic and logic circuits."],
-  "GPU":["The GPU accelerates graphics rendering and parallel computations.","It is essential for gaming, video editing, 3D rendering, and artificial intelligence workloads."],
-  "RAM":["RAM is temporary high speed memory for active tasks.","It allows the CPU to quickly access data in use."],
-  "Power Supply":["The power supply unit converts AC wall power into DC voltages required by the computer.","It powers all components including CPU, GPU, storage, and motherboard."],
-  "Hard Drive":["A hard drive stores data magnetically on spinning platters.","It offers high capacity for low cost but slower speeds."],
-  "SSD":["An SSD uses flash memory to store data.","It is significantly faster, silent, and more reliable than a hard drive."],
-  "Cooling System":["Cooling systems remove heat from components.","They include heat sinks, air coolers, and liquid cooling loops."],
-  "Network Card":["Network cards enable internet and local network connectivity.","They manage data transmission and network protocols."],
-  "Sound Card":["Sound cards process audio input and output signals.","They improve sound quality and add microphone and speaker ports."],
-  "Optical Drive":["Optical drives read and write CDs, DVDs, and Blu-ray discs."],
-  "Motherboard Chipset":["The chipset manages communication between the CPU, RAM, storage, and peripherals."]
-};
+    <footer style="max-width:1100px;margin:28px auto;padding:12px;text-align:center;color:#cfeffd">&copy; 2025 BTVTEd-CSS Community. All rights reserved.</footer>
+  </main>
 
-// Speak / highlight
-function stopSpeaking() { try{speechSynthesis.cancel();}catch(e){} }
-function speakText(text, opts={}) {
-  stopSpeaking();
-  subtitleEl.textContent=text;
-  const u = new SpeechSynthesisUtterance(text);
-  if(opts.rate) u.rate=opts.rate; if(opts.pitch) u.pitch=opts.pitch;
-  u.onend=()=>{ subtitleEl.textContent=''; };
-  window.speechSynthesis.speak(u);
-}
-function readSegments(segments) {
-  stopSpeaking();
-  const full = segments.join(' ');
-  const sentences = full.match(/[^\.!\?]+[\.!\?]?/g)||[full];
-  let idx=0;
-  function speakNext(){
-    if(idx>=sentences.length){ subtitleEl.innerHTML=''; return; }
-    const sentence = sentences[idx].trim();
-    const words = sentence.split(/\s+/);
-    subtitleEl.innerHTML = words.map(w=>`<span class="word">${w}</span>`).join(' ');
-    const utter = new SpeechSynthesisUtterance(sentence);
-    let wordIndex=0;
-    utter.onboundary=(ev)=>{ if(typeof ev.charIndex==='number'){
-      const spans = subtitleEl.querySelectorAll('.word');
-      spans.forEach((sp,j)=>sp.classList.toggle('highlight-word', j===wordIndex));
-      wordIndex++;
-    }};
-    utter.onend=()=>{ idx++; speakNext(); };
-    window.speechSynthesis.speak(utter);
-  }
-  speakNext();
-}
-
-// Highlight item
-function highlightNav(index, autoSpeak=true){
-  navLinks.forEach(n=>n.classList.remove('highlight'));
-  currentNavIndex=index;
-  const el = navLinks[currentNavIndex];
-  el.classList.add('highlight');
-  vibrate(30);
-  if(autoSpeak){
-    const content=navContent[el.innerText];
-    if(content) readSegments(content);
-    else speakText(el.innerText);
-  }
-}
-
-// Init
-highlightNav(0,false);
-
-// Start prompt
-function askStart(){
-  speakText('Tap or press any arrow key to begin navigation.');
-  function startNow(e){
-    navigationStarted=true;
-    vibrate([40,40,40]);
-    speakText('Navigation started.');
-    document.removeEventListener('keydown',startNow);
-    document.removeEventListener('touchstart',startNow);
-  }
-  document.addEventListener('keydown',startNow);
-  document.addEventListener('touchstart',startNow);
-}
-askStart();
-
-// Keyboard nav
-document.addEventListener('keydown', e=>{
-  if(!navigationStarted) return;
-  if(['ArrowUp','ArrowLeft'].includes(e.key)){
-    currentNavIndex=(currentNavIndex-1+navLinks.length)%navLinks.length;
-    highlightNav(currentNavIndex);
-  }
-  else if(['ArrowDown','ArrowRight'].includes(e.key)){
-    currentNavIndex=(currentNavIndex+1)%navLinks.length;
-    highlightNav(currentNavIndex);
-  }
-});
-
-// Click/tap nav items
-navLinks.forEach((el,i)=>{
-  el.addEventListener('click',()=>{
-    navigationStarted=true;
-    vibrate(40);
-    highlightNav(i,true);
-  });
-  el.addEventListener('keydown', e=>{
-    if(e.key==='Enter'||e.key===' '){
-      e.preventDefault();
-      navigationStarted=true;
-      vibrate(40);
-      highlightNav(i,true);
-    }
-  });
-});
-
-// Mobile double / triple tap
-let tapCount=0, tapTimer=null;
-document.addEventListener('touchstart', e=>{
-  if(e.touches && e.touches.length>1) return;
-  if(!navigationStarted) return;
-  tapCount++; clearTimeout(tapTimer);
-  tapTimer=setTimeout(()=>{
-    if(tapCount===2){
-      vibrate([50,50]);
-      currentNavIndex=(currentNavIndex+1)%navLinks.length;
-      highlightNav(currentNavIndex,true);
-    }
-    else if(tapCount===3){
-      vibrate([200,100,200]);
-      stopSpeaking();
-      subtitleEl.textContent='Reading stopped.';
-    }
-    tapCount=0;
-  },350);
-},{passive:true});
-
-/* =======================
-   DYSLEXIA MODE
-======================= */
-const dysBtn=document.getElementById("dyslexia-btn");
-let dysOn=false;
-function toggleDyslexia(){
-  dysOn=!dysOn;
-  if(dysOn){
-    document.body.classList.add("dyslexia-mode");
-    speakText("Dyslexia mode enabled.");
-  } else {
-    document.body.classList.remove("dyslexia-mode");
-    speakText("Dyslexia mode disabled.");
-  }
-  vibrate(40);
-}
-dysBtn.addEventListener("click",toggleDyslexia);
-document.addEventListener("keydown", e=>{
-  if(e.key==='d'||e.key==='D') toggleDyslexia();
-});
-
-/* =======================
-   ACCESSIBILITY BUTTONS
-======================= */
-const ctrlPanel=document.getElementById("controls");
-ctrlPanel.insertAdjacentHTML("beforeend",`
-  <div style="margin-top:15px;">
-    <button id="btn-adhd" class="acc-btn">ADHD Mode</button>
-    <button id="btn-contrast" class="acc-btn">High Contrast</button>
-    <button id="btn-colorblind" class="acc-btn">Colorblind</button>
-    <button id="btn-bionic" class="acc-btn">Bionic Reading</button>
+  <!-- QR MODAL -->
+  <div id="qr-modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div id="qr-modal-content" role="document">
+      <h2 style="color:#00e5ff">Scan QR Code</h2>
+      <video id="qr-video" autoplay muted playsinline></video>
+      <div id="qr-msg">Initializing camera...</div>
+      <div style="margin-top:12px">
+        <button id="qr-btn-close" class="acc-btn">Close</button>
+      </div>
+    </div>
   </div>
-`);
 
-let adhdOn=false, contrastOn=false, cbOn=false, bionicOn=false;
+  <!-- CHAT SUPPORT -->
+  <div id="chat-container" aria-hidden="false">
+    <div id="chat-button" role="button" tabindex="0" aria-expanded="false" aria-controls="chat-box">💬 Chat</div>
 
-function toggleADHD(){ 
-  adhdOn=!adhdOn; 
-  if(adhdOn) document.body.classList.add("adhd-mode"); 
-  else document.body.classList.remove("adhd-mode"); 
-  speakText(`ADHD mode ${adhdOn?"on":"off"}`); 
-  vibrate(60);
-}
-function toggleContrast(){ 
-  contrastOn=!contrastOn; 
-  if(contrastOn) document.body.classList.add("contrast-mode"); 
-  else document.body.classList.remove("contrast-mode"); 
-  speakText(`High contrast ${contrastOn?"on":"off"}`); 
-  vibrate(60);
-}
-function toggleColorblind(){ 
-  cbOn=!cbOn; 
-  if(cbOn) document.body.classList.add("colorblind-mode"); 
-  else document.body.classList.remove("colorblind-mode"); 
-  speakText(`Colorblind mode ${cbOn?"enabled":"disabled"}`); 
-  vibrate(60);
-}
-function toggleBionic(){ 
-  bionicOn=!bionicOn; 
-  if(bionicOn) document.body.classList.add("bionic-mode"); 
-  else document.body.classList.remove("bionic-mode"); 
-  speakText(`Bionic reading ${bionicOn?"activated":"deactivated"}`); 
-  vibrate(60);
-}
+    <div id="chat-box" role="dialog" aria-label="Support chat" aria-hidden="true">
+      <div id="chat-header">Support Chat <button id="chat-close" aria-label="Close chat" style="background:transparent;border:none;cursor:pointer">✖</button></div>
+      <div id="chat-messages" aria-live="polite"></div>
+      <input id="chat-input" type="text" placeholder="Type a message and press Enter" aria-label="Chat input" />
+    </div>
+  </div>
 
-document.getElementById("btn-adhd").onclick=toggleADHD;
-document.getElementById("btn-contrast").onclick=toggleContrast;
-document.getElementById("btn-colorblind").onclick=toggleColorblind;
-document.getElementById("btn-bionic").onclick=toggleBionic;
+  <!-- VOICE UI -->
+  <button id="voice-btn" aria-pressed="false" title="Toggle voice recognition">🎙️ Start Listening</button>
+  <div id="transcript" role="status" aria-live="polite"></div>
 
-document.addEventListener("keydown", e=>{
-  if(e.key==="a") toggleADHD();
-  if(e.key==="h") toggleContrast();
-  if(e.key==="c") toggleColorblind();
-  if(e.key==="b") toggleBionic();
-});
-</script>
+  <script>
+    /* ========== INITIAL SETUP ========== */
+    // Replace these with your own values
+    const EMAILJS_PUBLIC_KEY = "sojWVDKS2T7L2YjhG"; // <- replace
+    const EMAILJS_SERVICE = "service_tf8nhla";    // <- replace
+    const EMAILJS_TEMPLATE = "__ejs-test-mail-service__"; // <- replace
+    const REQUIRED_CODE = "AUTHORIZED_USER";     // <- replace with actual   to grant access
+
+    // EmailJS init (if provided)
+    try { if(window.emailjs) emailjs.init(EMAILJS_PUBLIC_KEY); } catch(e){ console.warn('EmailJS init warning:', e); }
+
+    /* ========== ELEMENT REFS ========== */
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const featureLink = document.getElementById('feature-link');
+    const qrModal = document.getElementById('qr-modal');
+    const qrVideo = document.getElementById('qr-video');
+    const qrMsg = document.getElementById('qr-msg');
+    const qrBtnClose = document.getElementById('qr-btn-close');
+
+    const chatButton = document.getElementById('chat-button');
+    const chatBox = document.getElementById('chat-box');
+    const chatClose = document.getElementById('chat-close');
+    const chatInput = document.getElementById('chat-input');
+    const chatMessages = document.getElementById('chat-messages');
+
+    const voiceBtn = document.getElementById('voice-btn');
+    const transcriptEl = document.getElementById('transcript');
+
+    const navLinks = Array.from(document.querySelectorAll('.nav-item'));
+    const subtitleEl = document.getElementById('subtitle');
+
+    /* ========== MOBILE MENU (accessible) ========== */
+    function toggleMobileMenu(open) {
+      const newState = open === undefined ? mobileMenu.style.display !== 'block' : !!open;
+      mobileMenu.style.display = newState ? 'block' : 'none';
+      mobileMenu.setAttribute('aria-hidden', (!newState).toString());
+      hamburger.setAttribute('aria-expanded', newState.toString());
+      if(newState){
+        // focus first link for keyboard users
+        const first = mobileMenu.querySelector('a');
+        if(first) first.focus();
+      } else {
+        hamburger.focus();
+      }
+    }
+    hamburger.addEventListener('click', ()=> toggleMobileMenu());
+    hamburger.addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' ') { e.preventDefault(); toggleMobileMenu(); } });
+
+    // close mobile menu on link click
+    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', ()=> toggleMobileMenu(false)));
+
+    /* ========== QR SCANNER (dynamic import of QrScanner) ========== */
+    let qrScanner = null;
+
+    async function openQRModal(){
+      qrModal.style.display = 'flex';
+      qrModal.setAttribute('aria-hidden','false');
+      qrMsg.style.color = '#00e5ff';
+      qrMsg.textContent = 'Initializing camera...';
+
+      // destroy any previous scanner
+      try{ if(qrScanner){ await qrScanner.destroy(); qrScanner = null; } } catch(e){ /* ignore */ }
+
+      try {
+        // dynamic import to allow non-module pages to still work gracefully
+        const { default: QrScanner } = await import('https://unpkg.com/qr-scanner@1.4.2/qr-scanner.min.js');
+        // create scanner
+        qrScanner = new QrScanner(qrVideo, result => {
+          if(!result) return;
+          const scanned = String(result).trim();
+          if(scanned === REQUIRED_CODE){
+            qrMsg.style.color = '#bfffcf';
+            qrMsg.textContent = 'QR accepted — Access granted! Redirecting...';
+            try{ qrScanner.stop(); }catch(e){}
+            setTimeout(()=> closeQRModal(true), 350);
+          } else {
+            qrMsg.style.color = '#ffb3b3';
+            qrMsg.textContent = 'Unauthorized QR. Try again.';
+          }
+        }, {
+          highlightScanRegion: true,
+          highlightCodeOutline: true,
+          preferredCamera: 'environment'
+        });
+
+        await qrScanner.start();
+        qrMsg.textContent = 'Scan the QR code now';
+      } catch(err) {
+        console.error('QR scanner error', err);
+        qrMsg.style.color = '#ffb3b3';
+        qrMsg.textContent = 'Camera not accessible or QR library failed to load.';
+      }
+    }
+
+    function closeQRModal(success=false){
+      try{ if(qrScanner){ qrScanner.stop(); qrScanner.destroy(); } } catch(e){ console.warn(e) }
+      qrScanner = null;
+      qrModal.style.display='none';
+      qrModal.setAttribute('aria-hidden','true');
+      if(success){
+        // grant access - example: go to features.html or reveal content
+        window.location.href = 'features.html'; // adjust as needed
+      }
+    }
+
+    featureLink && featureLink.addEventListener('click', (e)=> { e.preventDefault(); openQRModal(); });
+    qrBtnClose.addEventListener('click', ()=> closeQRModal(false) );
+
+    /* ========== CHAT OPEN/CLOSE & SEND ========== */
+    function toggleChat(open){
+      const newState = open === undefined ? chatBox.style.display !== 'flex' : !!open;
+      chatBox.style.display = newState ? 'flex' : 'none';
+      chatBox.setAttribute('aria-hidden', (!newState).toString());
+      chatButton.setAttribute('aria-expanded', newState.toString());
+      if(newState) chatInput.focus(); else chatButton.focus();
+    }
+    chatButton.addEventListener('click', ()=> toggleChat());
+    chatButton.addEventListener('keydown', e=>{ if(e.key==='Enter'|| e.key===' ') toggleChat(); });
+
+    chatClose.addEventListener('click', ()=> toggleChat(false));
+
+    chatInput.addEventListener('keypress', function(e){
+      if(e.key==='Enter' && chatInput.value.trim()!==''){
+        const userMsg = document.createElement('div'); userMsg.textContent = "You: " + chatInput.value; userMsg.style.marginBottom='8px'; chatMessages.appendChild(userMsg);
+        // send via EmailJS if configured
+        if(window.emailjs && EMAILJS_SERVICE && EMAILJS_TEMPLATE){
+          emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, { message: chatInput.value, to_email: "css.demo.web@gmail.com" })
+            .then(()=> console.log('Email sent'))
+            .catch(err=> console.warn('Email send failed', err));
+        }
+        const reply = document.createElement('div'); reply.textContent = "Support: Thank you — we'll reply by email."; reply.style.color='#00e5ff'; reply.style.marginBottom='8px'; chatMessages.appendChild(reply);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        chatInput.value='';
+      }
+    });
+
+    /* ========== VOICE RECOGNITION (TTS + commands) ========== */
+    let recognizer = null;
+    let isListening = false;
+    let finalTranscript = '';
+
+    function ttsSpeak(message){
+      try{
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(message);
+        u.rate = 0.95; u.volume = 1; u.pitch = 1;
+        window.speechSynthesis.speak(u);
+      }catch(e){ console.warn('tts error', e) }
+    }
+
+    if(window.SpeechRecognition || window.webkitSpeechRecognition){
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognizer = new SpeechRecognition();
+      recognizer.continuous = false;
+      recognizer.interimResults = true;
+      recognizer.lang = 'en-US';
+
+      recognizer.addEventListener('start', ()=>{
+        isListening = true;
+        voiceBtn.classList.add('listening');
+        voiceBtn.setAttribute('aria-pressed','true');
+        voiceBtn.textContent = '🎙️ Listening...';
+        transcriptEl.style.display = 'block';
+        transcriptEl.textContent = 'Listening...';
+      });
+
+      recognizer.addEventListener('result', (event)=>{
+        let interim = '';
+        for(let i = event.resultIndex; i < event.results.length; i++){
+          const t = event.results[i][0].transcript;
+          if(event.results[i].isFinal) finalTranscript += t + ' ';
+          else interim += t;
+        }
+        transcriptEl.textContent = finalTranscript + (interim ? ' (' + interim + ')' : '');
+      });
+
+      recognizer.addEventListener('end', ()=>{
+        const command = finalTranscript.toLowerCase().trim();
+        // navigation commands
+        if(command.includes('home')) { location.hash = '#home'; ttsSpeak('Going to home'); }
+        else if(command.includes('features')) { openQRModal(); ttsSpeak('Opening features'); }
+        else if(command.includes('models') || command.includes('explore')) { location.hash = '#models'; ttsSpeak('Going to models'); }
+        else if(command.includes('about')) { location.hash = '#about'; ttsSpeak('Opening about'); }
+        else if(command.includes('chat') || command.includes('support')) { toggleChat(true); ttsSpeak('Opening support chat'); }
+        else if(command.includes('send') && chatInput.value){ chatInput.dispatchEvent(new KeyboardEvent('keypress',{key:'Enter'})); ttsSpeak('Message sent'); }
+        else if(command.includes('scroll down')){ window.scrollBy(0,300); ttsSpeak('Scrolling down'); }
+        else if(command.includes('scroll up')){ window.scrollBy(0,-300); ttsSpeak('Scrolling up'); }
+        else if(command.includes('stop') || command.includes('pause')){ window.speechSynthesis.cancel(); subtitleEl.textContent=''; ttsSpeak('Stopped reading'); }
+        else if(finalTranscript.trim()){ // fill chat input as fallback
+          chatInput.value = finalTranscript.trim();
+          ttsSpeak('Text added to input');
+        }
+
+        finalTranscript = '';
+        isListening = false;
+        voiceBtn.classList.remove('listening');
+        voiceBtn.setAttribute('aria-pressed','false');
+        voiceBtn.textContent = '🎙️ Start Listening';
+        setTimeout(()=> transcriptEl.style.display = 'none', 2200);
+      });
+
+      recognizer.addEventListener('error', (ev)=>{
+        transcriptEl.style.display = 'block';
+        transcriptEl.textContent = 'Voice error: ' + ev.error;
+        setTimeout(()=> transcriptEl.style.display='none', 3000);
+      });
+
+      // voice btn toggle
+      voiceBtn.addEventListener('click', ()=>{
+        if(!isListening){
+          finalTranscript = '';
+          try{ recognizer.start(); } catch(e){ console.warn(e) }
+        } else {
+          recognizer.stop();
+        }
+      });
+    } else {
+      // fallback
+      voiceBtn.addEventListener('click', ()=>{
+        transcriptEl.style.display = 'block';
+        transcriptEl.textContent = 'Voice not supported. Use Chrome or Edge.';
+        setTimeout(()=> transcriptEl.style.display='none', 3500);
+      });
+    }
+
+    /* unlock audio upon first user gesture (mobile autoplay restrictions) */
+    function unlockAudioOnce(){
+      try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); } catch(e){}
+      document.removeEventListener('touchstart', unlockAudioOnce);
+      document.removeEventListener('click', unlockAudioOnce);
+    }
+    document.addEventListener('touchstart', unlockAudioOnce, { once:true });
+    document.addEventListener('click', unlockAudioOnce, { once:true });
+
+    /* ========== NAVIGATION + TTS readout with highlighting ========== */
+    const navContent = {
+      "Motherboard":["The motherboard is the central printed circuit board that connects all major computer components.","It contains the CPU socket, RAM slots, PCIe slots, chipset, power connectors and controllers."],
+      "CPU":["The CPU is the central processing unit. It executes instructions and runs programs.","It contains cores and cache memory."],
+      "GPU":["The GPU accelerates graphics rendering and parallel computations.","It is used for gaming and rendering."],
+      "RAM":["RAM is temporary high speed memory for active tasks.","It allows the CPU to quickly access data in use."],
+      "Power Supply":["The power supply converts AC to DC voltages for components."],
+      "Hard Drive":["A hard drive stores data magnetically on spinning platters, offering high capacity."],
+      "SSD":["An SSD uses flash memory to store data. It is faster and more reliable than HDDs."],
+      "Cooling System":["Cooling systems remove heat. They include fans and liquid loops."],
+      "Network Card":["Network cards enable internet and local network connectivity."],
+      "Sound Card":["Sound cards process audio input and output to improve audio quality."],
+      "Optical Drive":["Optical drives read and write optical discs like CDs and DVDs."],
+      "Motherboard Chipset":["The chipset manages communication between CPU, RAM, storage and peripherals."]
+    };
+
+    let currentNavIndex = 0;
+    function stopSpeaking(){ try{ window.speechSynthesis.cancel(); } catch(e){} subtitleEl.innerHTML=''; }
+    function highlightNav(index, autoSpeak=true){
+      navLinks.forEach(n=>n.classList.remove('highlight'));
+      currentNavIndex = index;
+      const el = navLinks[currentNavIndex];
+      el.classList.add('highlight');
+      navigator.vibrate && navigator.vibrate(30);
+      if(autoSpeak){
+        const content = navContent[el.innerText];
+        if(content) readSegments(content);
+        else ttsSpeak(el.innerText);
+      }
+      el.focus();
+    }
+
+    function readSegments(segments){
+      stopSpeaking();
+      const full = segments.join(' ');
+      const sentences = full.match(/[^\.!\?]+[\.!\?]?/g) || [full];
+      let idx = 0;
+      function speakNext(){
+        if(idx >= sentences.length){ subtitleEl.innerHTML=''; return; }
+        const sentence = sentences[idx].trim();
+        const words = sentence.split(/\s+/);
+        subtitleEl.innerHTML = words.map(w => `<span class="word">${w}</span>`).join(' ');
+        const utter = new SpeechSynthesisUtterance(sentence);
+        let wordIndex = 0;
+        utter.onboundary = (ev) => {
+          if(typeof ev.charIndex === 'number'){
+            const spans = subtitleEl.querySelectorAll('.word');
+            spans.forEach((sp,j)=> sp.classList.toggle('highlight-word', j === wordIndex));
+            wordIndex++;
+          }
+        };
+        utter.onend = () => { idx++; speakNext(); };
+        window.speechSynthesis.speak(utter);
+      }
+      speakNext();
+    }
+
+    // init highlight
+    highlightNav(0, false);
+
+    // Startup prompt
+    function askStart(){
+      ttsSpeak('Tap or press any arrow key to begin navigation.');
+      function startNow(e) {
+        document.removeEventListener('keydown',startNow);
+        document.removeEventListener('touchstart',startNow);
+        navigator.vibrate && navigator.vibrate([40,40,40]);
+        ttsSpeak('Navigation started.');
+      }
+      document.addEventListener('keydown', startNow);
+      document.addEventListener('touchstart', startNow);
+    }
+    askStart();
+
+    // keyboard nav
+    document.addEventListener('keydown', e=>{
+      if(e.key === 'ArrowLeft' || e.key === 'ArrowUp'){ currentNavIndex = (currentNavIndex - 1 + navLinks.length) % navLinks.length; highlightNav(currentNavIndex); }
+      else if(e.key === 'ArrowRight' || e.key === 'ArrowDown'){ currentNavIndex = (currentNavIndex + 1) % navLinks.length; highlightNav(currentNavIndex); }
+    });
+
+    // clickable nav items
+    navLinks.forEach((el, i)=>{
+      el.addEventListener('click', ()=> { highlightNav(i, true); });
+      el.addEventListener('keydown', e=> {
+        if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); highlightNav(i, true); }
+      });
+    });
+
+    // mobile double/triple tap gestures
+    let tapCount = 0, tapTimer = null;
+    document.addEventListener('touchstart', (e)=>{
+      if(e.touches && e.touches.length > 1) return;
+      // only when user has started navigation (for accessibility)
+      tapCount++; clearTimeout(tapTimer);
+      tapTimer = setTimeout(()=>{
+        if(tapCount === 2){
+          navigator.vibrate && navigator.vibrate([50,50]);
+          currentNavIndex = (currentNavIndex + 1) % navLinks.length;
+          highlightNav(currentNavIndex, true);
+        } else if(tapCount === 3){
+          navigator.vibrate && navigator.vibrate([200,100,200]);
+          stopSpeaking();
+          subtitleEl.textContent = 'Reading stopped.';
+        }
+        tapCount = 0;
+      }, 350);
+    }, { passive: true });
+
+    /* ========== Accessibility Modes (dyslexia, adhd, contrast, colorblind, bionic) ========== */
+    const dysBtn = document.getElementById('dyslexia-btn');
+    const btnADHD = document.getElementById('btn-adhd');
+    const btnContrast = document.getElementById('btn-contrast');
+    const btnColorblind = document.getElementById('btn-colorblind');
+    const btnBionic = document.getElementById('btn-bionic');
+
+    dysBtn.addEventListener('click', toggleDyslexia);
+    btnADHD.addEventListener('click', toggleADHD);
+    btnContrast.addEventListener('click', toggleContrast);
+    btnColorblind.addEventListener('click', toggleColorblind);
+    btnBionic.addEventListener('click', toggleBionic);
+
+    let dysOn=false, adhdOn=false, contrastOn=false, cbOn=false, bionicOn=false;
+
+    function toggleDyslexia(){
+      dysOn = !dysOn;
+      document.body.classList.toggle('dyslexia-mode', dysOn);
+      ttsSpeak(dysOn ? 'Dyslexia mode enabled' : 'Dyslexia mode disabled');
+      navigator.vibrate && navigator.vibrate(40);
+    }
+    function toggleADHD(){
+      adhdOn = !adhdOn;
+      document.body.classList.toggle('adhd-mode', adhdOn);
+      ttsSpeak(`ADHD mode ${adhdOn ? 'on' : 'off'}`);
+      navigator.vibrate && navigator.vibrate(60);
+    }
+    function toggleContrast(){
+      contrastOn = !contrastOn;
+      document.body.classList.toggle('contrast-mode', contrastOn);
+      ttsSpeak(`High contrast ${contrastOn ? 'on' : 'off'}`);
+      navigator.vibrate && navigator.vibrate(60);
+    }
+    function toggleColorblind(){
+      cbOn = !cbOn;
+      document.body.classList.toggle('colorblind-mode', cbOn);
+      ttsSpeak(`Colorblind mode ${cbOn ? 'enabled' : 'disabled'}`);
+      navigator.vibrate && navigator.vibrate(60);
+    }
+    function toggleBionic(){
+      bionicOn = !bionicOn;
+      document.body.classList.toggle('bionic-mode', bionicOn);
+      ttsSpeak(`Bionic reading ${bionicOn ? 'activated' : 'deactivated'}`);
+      navigator.vibrate && navigator.vibrate(60);
+    }
+
+    // keyboard shortcuts for modes
+    document.addEventListener('keydown', e=>{
+      if(e.key === 'd' || e.key === 'D') toggleDyslexia();
+      if(e.key === 'a') toggleADHD();
+      if(e.key === 'h') toggleContrast();
+      if(e.key === 'c') toggleColorblind();
+      if(e.key === 'b') toggleBionic();
+    });
+
+    /* ========== Clean-up before unload (stop TTS/permissions) ========== */
+    window.addEventListener('pagehide', ()=>{ try{ window.speechSynthesis.cancel(); if(qrScanner) { qrScanner.destroy && qrScanner.destroy(); } } catch(e){} });
+  </script>
 </body>
 </html>
-
