@@ -1,569 +1,1851 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>CSS Tools & Equipment Guides</title>
-
-<!-- model-viewer (module) -->
-<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-
-<!-- EmailJS SDK -->
-<script src="https://cdn.emailjs.com/dist/email.min.js"></script>
-
-<style>
-/* =======================
-   BASIC RESET & VARIABLES
-======================= */
-* { box-sizing: border-box; margin:0; padding:0; font-family: Arial, sans-serif; }
-body { background:#f4f4f9; color:#000; line-height:1.6; scroll-behavior: smooth; }
-a { text-decoration:none; color:inherit; }
-img { max-width:100%; display:block; }
-
-/* NAVBAR */
-.navbar {
-    display:flex; justify-content: space-between; align-items:center;
-    padding: 12px 18px; background: cyan; position: sticky; top:0; 
-    z-index:1000;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-}
-.navbar .logo { font-size:1.25rem; font-weight:bold; color:#000; }
-
-/* MENU DEFAULT (DESKTOP) */
-.menu ul { display:flex; list-style:none; gap:12px; align-items:center; margin:0; padding:0; }
-.menu ul li a { display:inline-block; padding:6px 10px; border-radius:6px; transition:0.18s; color:#000; }
-.menu ul li a:hover { background:#00e5ff; color:#fff; }
-
-/* HAMBURGER (MOBILE) */
-.hamburger { width:30px; height:20px; display:none; flex-direction:column; justify-content:space-between; cursor:pointer; }
-.hamburger span { height:3px; background:#000; border-radius:4px; transition:0.25s ease; display:block; }
-.hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px,6px); }
-.hamburger.open span:nth-child(2) { opacity:0; transform: translateX(-6px); }
-.hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(6px,-6px); }
-
-/* MOBILE MENU DROPDOWN */
-@media (max-width: 768px) {
-    .hamburger { display:flex; }
-    .menu { width:100%; display:none; }
-    .menu.active { display:block; }
-    .menu ul { flex-direction:column; background: cyan; padding:12px 0; text-align:center; gap:12px; margin:0; }
-    .menu ul li a { color:#000; padding:10px 15px; display:block; }
-}
-
-/* HERO */
-.hero { text-align:center; padding:80px 16px; background: linear-gradient(120deg,#0f2027,#203a43,#2c5364); color:#fff; }
-.hero h1 { font-size:2.2rem; margin-bottom:14px; color:#00e5ff; }
-.hero p { font-size:1rem; max-width:700px; margin:0 auto 18px auto; }
-.hero .cta-btn { display:inline-block; padding:10px 18px; background:#00e5ff; color:#111; border-radius:8px; font-weight:bold; transition:0.2s; }
-.hero .cta-btn:hover { transform:scale(1.03); }
-
-/* FEATURES */
-.features { display:flex; flex-wrap:wrap; justify-content:center; gap:18px; padding:36px 16px; max-width:1200px; margin:0 auto; }
-.feature-card { flex:1 1 260px; background:#fff; border-radius:12px; padding:18px; text-align:center; box-shadow:0 6px 18px rgba(0,0,0,0.08); transition: transform 0.18s; position:relative; min-width:220px; }
-.feature-card:hover { transform: translateY(-6px); }
-.feature-card h3 { color:#00e5ff; margin-bottom:10px; font-size:1.05rem; }
-.feature-card p { font-size:0.95rem; color:#333; margin-bottom:14px; }
-
-/* Speak button */
-.feature-actions { display:flex; justify-content:center; gap:8px; }
-.btn-speak {
-  display:inline-flex; align-items:center; gap:8px;
-  padding:6px 10px; background:#00e5ff; color:#fff; border-radius:8px; border:none; cursor:pointer;
-  font-weight:600; font-size:0.9rem; transition:transform .12s;
-}
-.btn-speak:active { transform:scale(.98); }
-.btn-speak[aria-pressed="true"] { box-shadow:0 0 0 4px rgba(0,229,255,0.12); }
-
-/* Voice recognition (microphone) */
-#voice-btn {
-  position: fixed; left:18px; bottom:18px; z-index:20000;
-  background: linear-gradient(45deg,#ff5f6d,#ffc371); color:#111; border:none; padding:12px 14px;
-  border-radius:999px; box-shadow:0 8px 20px rgba(0,0,0,0.2); cursor:pointer; font-weight:700;
-}
-#voice-btn.listening { box-shadow:0 0 0 6px rgba(255,195,113,0.14); transform:scale(1.03); }
-#transcript {
-  position: fixed; left:18px; bottom:78px; z-index:20000; min-width:200px; max-width:320px;
-  background: rgba(0,0,0,0.75); color:#fff; padding:10px 12px; border-radius:10px; font-size:0.95rem;
-  box-shadow:0 10px 30px rgba(0,0,0,0.25); display:none; word-break:break-word;
-}
-
-/* MODELS */
-.models-section { padding:36px 16px; max-width:1200px; margin:0 auto; }
-.models-section h2 { text-align:center; color:#00e5ff; margin-bottom:20px; }
-.model-wrapper { display:flex; flex-wrap:wrap; justify-content:center; gap:16px; }
-.model-card { background:#fff; border-radius:12px; padding:12px; box-shadow:0 6px 18px rgba(0,0,0,0.08); width:280px; text-align:center; }
-.model-card model-viewer { width:100%; height:220px; border-radius:8px; display:block; }
-.model-label { font-weight:700; margin-top:8px; color:#00e5ff; }
-
-/* CHAT / QR / FOOTER */
-#chat-container { position:fixed; bottom:18px; right:18px; z-index:10000; font-family: 'Inter', sans-serif; }
-#chat-button { background: linear-gradient(45deg, #00e5ff, #ff00ff); color:#111; padding:10px 14px; border-radius:40px; cursor:pointer; box-shadow:0 0 12px #00e5ff; }
-#chat-box { display:none; width:300px; max-height:360px; background:#1a1a1a; color:#fff; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,0.25); flex-direction:column; overflow:hidden; margin-top:10px; }
-#chat-header { background:#00e5ff; color:#111; padding:10px; font-weight:600; display:flex; justify-content:space-between; align-items:center; }
-#chat-messages { padding:8px; flex:1; overflow:auto; }
-#chat-input { width:100%; padding:10px; border:none; outline:none; border-top:1px solid #333; background:#222; color:#fff; }
-
-#qr-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:3000; justify-content:center; align-items:center; }
-#qr-modal-content { background:#061221; padding:18px; border-radius:10px; text-align:center; color:#fff; max-width:400px; width:92%; }
-#qr-video { width:300px; height:300px; background:#000; margin:8px auto; border-radius:8px; }
-#qr-msg { margin-top:8px; color:#ffb3b3; font-weight:700; }
-
-/* Footer */
-footer { text-align:center; padding:20px 12px; background:#111; color:#fff; margin-top:18px; }
-
-/* Responsive tweaks */
-@media (max-width: 768px) {
-  .hero { padding:60px 12px; }
-  .hero h1 { font-size:1.6rem; }
-  .features { padding:24px 12px; gap:12px; }
-  .feature-card { width:100%; max-width:420px; }
-  .model-card { width:100%; max-width:420px; }
-}
-</style>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CSS Tools & Equipment Guides - Accessible Learning Platform</title>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- model-viewer -->
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    
+    <!-- EmailJS SDK -->
+    <script src="https://cdn.emailjs.com/dist/email.min.js" defer></script>
+    
+    <style>
+        /* =======================
+           CSS RESET & VARIABLES
+        ======================= */
+        :root {
+            --primary-color: #00e5ff;
+            --primary-dark: #00b8d4;
+            --secondary-color: #ff5f6d;
+            --accent-color: #ffc371;
+            --dark-bg: #0f2027;
+            --dark-gradient: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            --light-bg: #f4f4f9;
+            --card-bg: #ffffff;
+            --text-dark: #111111;
+            --text-light: #f4f4f9;
+            --text-gray: #333333;
+            --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-medium: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --shadow-heavy: 0 12px 36px rgba(0, 0, 0, 0.15);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        /* =======================
+           SKIP TO CONTENT
+        ======================= */
+        .skip-link {
+            position: absolute;
+            top: -60px;
+            left: 10px;
+            background: var(--primary-color);
+            color: var(--text-dark);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            z-index: 9999;
+            transition: top 0.3s ease;
+        }
+        
+        .skip-link:focus {
+            top: 10px;
+            outline: 3px solid var(--accent-color);
+        }
+        
+        /* =======================
+           NAVIGATION
+        ======================= */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: var(--primary-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow-medium);
+            transition: var(--transition);
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            font-size: 1.3rem;
+        }
+        
+        /* Desktop Menu */
+        .desktop-menu ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .desktop-menu a {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .desktop-menu a:hover,
+        .desktop-menu a:focus {
+            background: rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .desktop-menu a:focus {
+            outline: 2px solid var(--text-dark);
+        }
+        
+        /* Hamburger Button */
+        .hamburger {
+            width: 36px;
+            height: 36px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            position: relative;
+            z-index: 1001;
+        }
+        
+        .hamburger span {
+            width: 24px;
+            height: 3px;
+            background: var(--text-dark);
+            border-radius: 3px;
+            transition: var(--transition);
+            display: block;
+        }
+        
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+            transform: translateX(-10px);
+        }
+        
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+        
+        /* Mobile Menu */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 280px;
+            height: 100vh;
+            background: var(--primary-color);
+            box-shadow: var(--shadow-heavy);
+            padding: 100px 30px 40px;
+            transition: right 0.4s ease;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .mobile-menu.active {
+            right: 0;
+        }
+        
+        .mobile-menu a {
+            display: block;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: var(--transition);
+        }
+        
+        .mobile-menu a:hover,
+        .mobile-menu a:focus {
+            background: rgba(0, 0, 0, 0.1);
+            transform: translateX(5px);
+        }
+        
+        /* Mobile Menu Overlay */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(3px);
+            z-index: 999;
+            display: none;
+        }
+        
+        .menu-overlay.active {
+            display: block;
+        }
+        
+        /* =======================
+           HERO SECTION
+        ======================= */
+        .hero {
+            text-align: center;
+            padding: 100px 20px;
+            background: var(--dark-gradient);
+            color: var(--text-light);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(0,229,255,0.05)"/></svg>');
+            background-size: cover;
+            z-index: 0;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            text-shadow: 0 2px 10px rgba(0, 229, 255, 0.3);
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            color: #cfeffd;
+        }
+        
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 32px;
+            background: var(--primary-color);
+            color: var(--text-dark);
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0, 229, 255, 0.3);
+        }
+        
+        .cta-btn:hover,
+        .cta-btn:focus {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0, 229, 255, 0.5);
+            background: var(--primary-dark);
+        }
+        
+        .cta-btn:focus {
+            outline: 3px solid var(--accent-color);
+        }
+        
+        /* =======================
+           FEATURES SECTION
+        ======================= */
+        .features {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 50px;
+            color: var(--text-dark);
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: var(--primary-color);
+            margin: 15px auto 0;
+            border-radius: 2px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow-light);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--primary-color);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-heavy);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+        }
+        
+        .feature-card p {
+            color: var(--text-gray);
+            margin-bottom: 25px;
+        }
+        
+        .feature-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 0.95rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: var(--text-dark);
+        }
+        
+        .btn-primary:hover,
+        .btn-primary:focus {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: var(--text-dark);
+            color: var(--text-light);
+        }
+        
+        .btn-secondary:hover,
+        .btn-secondary:focus {
+            background: #333;
+            transform: translateY(-2px);
+        }
+        
+        .btn-speak {
+            background: var(--primary-color);
+            color: var(--text-dark);
+        }
+        
+        .btn-speak.active {
+            background: var(--primary-dark);
+            box-shadow: 0 0 0 4px rgba(0, 229, 255, 0.2);
+        }
+        
+        /* =======================
+           3D MODELS SECTION
+        ======================= */
+        .models-section {
+            padding: 80px 20px;
+            background: rgba(0, 229, 255, 0.03);
+            border-top: 1px solid rgba(0, 229, 255, 0.1);
+            border-bottom: 1px solid rgba(0, 229, 255, 0.1);
+        }
+        
+        .models-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .model-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-light);
+            transition: var(--transition);
+        }
+        
+        .model-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-heavy);
+        }
+        
+        .model-viewer-container {
+            width: 100%;
+            height: 250px;
+            background: #f0f0f0;
+            position: relative;
+        }
+        
+        .model-card model-viewer {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        .model-info {
+            padding: 20px;
+        }
+        
+        .model-label {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .model-description {
+            color: var(--text-gray);
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+        
+        /* =======================
+           ACCESSIBILITY CONTROLS
+        ======================= */
+        .accessibility-controls {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            z-index: 500;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .accessibility-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: var(--text-dark);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: var(--shadow-medium);
+            transition: var(--transition);
+        }
+        
+        .accessibility-btn:hover,
+        .accessibility-btn:focus {
+            transform: scale(1.1);
+            background: var(--primary-dark);
+        }
+        
+        /* =======================
+           VOICE CONTROLS
+        ======================= */
+        #voice-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 500;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        #voice-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
+            color: var(--text-dark);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-medium);
+            transition: var(--transition);
+        }
+        
+        #voice-btn:hover,
+        #voice-btn:focus {
+            transform: scale(1.1);
+            box-shadow: 0 10px 30px rgba(255, 95, 109, 0.3);
+        }
+        
+        #voice-btn.listening {
+            animation: pulse 1.5s infinite;
+            box-shadow: 0 0 0 10px rgba(255, 195, 113, 0.2);
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 195, 113, 0.5);
+            }
+            70% {
+                box-shadow: 0 0 0 15px rgba(255, 195, 113, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 195, 113, 0);
+            }
+        }
+        
+        #transcript {
+            position: fixed;
+            bottom: 90px;
+            left: 20px;
+            z-index: 500;
+            min-width: 250px;
+            max-width: 350px;
+            background: rgba(0, 0, 0, 0.85);
+            color: var(--text-light);
+            padding: 15px 20px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            box-shadow: var(--shadow-heavy);
+            backdrop-filter: blur(10px);
+            display: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        #transcript.show {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* =======================
+           CHAT SUPPORT
+        ======================= */
+        #chat-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 500;
+        }
+        
+        #chat-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary-color), #ff00ff);
+            color: var(--text-dark);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-medium);
+            transition: var(--transition);
+        }
+        
+        #chat-button:hover,
+        #chat-button:focus {
+            transform: scale(1.1);
+            box-shadow: 0 10px 30px rgba(0, 229, 255, 0.4);
+        }
+        
+        #chat-box {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 350px;
+            max-height: 500px;
+            background: var(--dark-bg);
+            color: var(--text-light);
+            border-radius: 16px;
+            box-shadow: var(--shadow-heavy);
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
+            border: 1px solid rgba(0, 229, 255, 0.2);
+        }
+        
+        #chat-box.show {
+            display: flex;
+            animation: slideUp 0.3s ease;
+        }
+        
+        #chat-header {
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+            color: var(--text-dark);
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+        }
+        
+        #chat-close {
+            background: transparent;
+            border: none;
+            color: var(--text-dark);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+        
+        #chat-close:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+        
+        #chat-messages {
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+            min-height: 100px;
+            max-height: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .chat-message {
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        
+        .user-message {
+            background: rgba(0, 229, 255, 0.2);
+            align-self: flex-end;
+            border: 1px solid rgba(0, 229, 255, 0.4);
+        }
+        
+        .bot-message {
+            background: rgba(255, 255, 255, 0.1);
+            align-self: flex-start;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        #chat-input {
+            width: 100%;
+            padding: 18px 20px;
+            border: none;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-light);
+            outline: none;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 1rem;
+        }
+        
+        #chat-input:focus {
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        /* =======================
+           QR MODAL
+        ======================= */
+        #qr-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        #qr-modal.show {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        #qr-modal-content {
+            background: linear-gradient(135deg, #061221, #0a1a2a);
+            padding: 30px;
+            border-radius: 20px;
+            color: var(--text-light);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            box-shadow: var(--shadow-heavy);
+        }
+        
+        #qr-video {
+            width: 300px;
+            height: 300px;
+            background: #000;
+            margin: 20px auto;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+        }
+        
+        #qr-msg {
+            margin-top: 15px;
+            font-size: 1.1rem;
+            min-height: 30px;
+        }
+        
+        .qr-success {
+            color: #00ff99 !important;
+        }
+        
+        .qr-error {
+            color: #ff6b6b !important;
+        }
+        
+        .qr-scanning {
+            color: var(--primary-color) !important;
+        }
+        
+        /* =======================
+           FOOTER
+        ======================= */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            background: var(--text-dark);
+            color: var(--text-light);
+            margin-top: 60px;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer-logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .copyright {
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+        
+        /* =======================
+           RESPONSIVE DESIGN
+        ======================= */
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .models-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+            
+            .desktop-menu {
+                display: none;
+            }
+            
+            .hero {
+                padding: 80px 20px;
+            }
+            
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .models-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            #chat-box {
+                width: 300px;
+            }
+            
+            .accessibility-controls {
+                bottom: 80px;
+                right: 10px;
+            }
+            
+            #voice-controls {
+                bottom: 10px;
+                left: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 1.6rem;
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+            }
+            
+            .feature-card {
+                padding: 20px;
+            }
+            
+            #chat-box {
+                width: 280px;
+            }
+            
+            #qr-video {
+                width: 250px;
+                height: 250px;
+            }
+        }
+        
+        /* =======================
+           UTILITY CLASSES
+        ======================= */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        .sr-only {
+            position: absolute;
+            left: -10000px;
+            top: auto;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+        }
+    </style>
 </head>
 <body>
-
-<!-- NAVBAR -->
-<div class="navbar">
-    <div class="logo">BTVTEd-CSS Community</div>
-    <div class="hamburger" id="hamburger" aria-label="Open menu" role="button" tabindex="0">
-        <span></span>
-        <span></span>
-        <span></span>
+    <!-- Skip to Content Link -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <!-- Navigation -->
+    <header class="navbar" role="banner">
+        <div class="logo">
+            <i class="fas fa-tools"></i>
+            <span>BTVTEd-CSS Tools</span>
+        </div>
+        
+        <!-- Desktop Navigation -->
+        <nav class="desktop-menu" role="navigation" aria-label="Main navigation">
+            <ul>
+                <li><a href="#home" id="link-home"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="#features" id="link-features"><i class="fas fa-star"></i> Features</a></li>
+                <li><a href="#models" id="link-models"><i class="fas fa-cube"></i> Models</a></li>
+                <li><a href="about.html" id="link-about"><i class="fas fa-info-circle"></i> About</a></li>
+                <li><a href="#" id="feature-link"><i class="fas fa-qrcode"></i> QR Access</a></li>
+            </ul>
+        </nav>
+        
+        <!-- Mobile Menu Button -->
+        <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        
+        <!-- Mobile Menu Overlay -->
+        <div class="menu-overlay" id="menu-overlay"></div>
+        
+        <!-- Mobile Menu -->
+        <nav class="mobile-menu" id="mobile-menu" role="navigation" aria-label="Mobile navigation" aria-hidden="true">
+            <a href="#home" class="mobile-link"><i class="fas fa-home"></i> Home</a>
+            <a href="features.html" class="mobile-link"><i class="fas fa-star"></i> Features</a>
+            <a href="#models" class="mobile-link"><i class="fas fa-cube"></i> Models</a>
+            <a href="#about" class="mobile-link"><i class="fas fa-info-circle"></i> About</a>
+            <a href="#" id="mobile-feature-link" class="mobile-link"><i class="fas fa-qrcode"></i> QR Access</a>
+        </nav>
+    </header>
+    
+    <!-- Main Content -->
+    <main id="main-content" role="main">
+        <!-- Hero Section -->
+        <section class="hero" id="home" aria-labelledby="hero-title">
+            <div class="hero-content">
+                <h1 id="hero-title">CSS Tools & Equipment Guides</h1>
+                <p>Explore interactive 3D models of computer components with spoken descriptions, accessibility features, and comprehensive learning guides.</p>
+                <button class="cta-btn" onclick="document.querySelector('#models').scrollIntoView({behavior: 'smooth'})">
+                    <i class="fas fa-cube"></i> Explore 3D Models
+                </button>
+            </div>
+        </section>
+        
+        <!-- Features Section -->
+        <section class="features" id="features" aria-labelledby="features-title">
+            <h2 id="features-title" class="section-title">Key Features</h2>
+            <div class="features-grid">
+                <article class="feature-card" data-feature-text="Interactive 3D Models. Rotate and zoom to examine components from every angle with realistic 3D visualization.">
+                    <div class="feature-icon">
+                        <i class="fas fa-cube"></i>
+                    </div>
+                    <h3>Interactive 3D Models</h3>
+                    <p>Rotate, zoom, and inspect realistic 3D models of computer components including motherboards, CPUs, and GPUs with detailed visualizations.</p>
+                    <div class="feature-actions">
+                        <button class="btn btn-speak" data-speaking="false" title="Hear feature description" aria-pressed="false">
+                            <i class="fas fa-volume-up"></i> Speak Description
+                        </button>
+                        <a class="btn btn-secondary" href="lp3.html">
+                            <i class="fas fa-external-link-alt"></i> Learn More
+                        </a>
+                    </div>
+                </article>
+                
+                <article class="feature-card" data-feature-text="Comprehensive Definitions and Guides that explain each computer part and how it functions within a system.">
+                    <div class="feature-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h3>Definitions & Guides</h3>
+                    <p>Learn what each component does, how to install it safely, and best practices for maintenance and troubleshooting.</p>
+                    <div class="feature-actions">
+                        <button class="btn btn-speak" data-speaking="false" title="Hear feature description" aria-pressed="false">
+                            <i class="fas fa-volume-up"></i> Speak Description
+                        </button>
+                        <a class="btn btn-secondary" href="lp2.html">
+                            <i class="fas fa-external-link-alt"></i> Learn More
+                        </a>
+                    </div>
+                </article>
+                
+                <article class="feature-card" data-feature-text="Mobile friendly layouts and accessibility tools designed for learning on the go from any device.">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Mobile Friendly & Accessible</h3>
+                    <p>Access all guides and models from your phone with layouts optimized for small screens and full accessibility support.</p>
+                    <div class="feature-actions">
+                        <button class="btn btn-speak" data-speaking="false" title="Hear feature description" aria-pressed="false">
+                            <i class="fas fa-volume-up"></i> Speak Description
+                        </button>
+                        <a class="btn btn-secondary" href="lp.html">
+                            <i class="fas fa-external-link-alt"></i> Learn More
+                        </a>
+                    </div>
+                </article>
+            </div>
+        </section>
+        
+        <!-- 3D Models Section -->
+        <section class="models-section" id="models" aria-labelledby="models-title">
+            <div class="models-container">
+                <h2 id="models-title" class="section-title">Explore 3D Models</h2>
+                <div class="models-grid" role="list">
+                    <article class="model-card" role="listitem" aria-label="Motherboard 3D model">
+                        <div class="model-viewer-container">
+                            <model-viewer 
+                                src="rog_strix_x370-f_motherboard.glb" 
+                                alt="3D model of a motherboard showing detailed components and connections"
+                                auto-rotate 
+                                camera-controls
+                                camera-orbit="0deg 75deg 105%"
+                                interaction-prompt="none"
+                                loading="eager">
+                            </model-viewer>
+                        </div>
+                        <div class="model-info">
+                            <h3 class="model-label">Motherboard</h3>
+                            <p class="model-description">The main circuit board that connects all components of a computer system.</p>
+                            <a class="btn btn-primary" href="lp3.html">
+                                <i class="fas fa-info-circle"></i> View Details
+                            </a>
+                        </div>
+                    </article>
+                    
+                    <article class="model-card" role="listitem" aria-label="CPU 3D model">
+                        <div class="model-viewer-container">
+                            <model-viewer 
+                                src="free_intel_cpu.glb" 
+                                alt="3D model of a CPU showing processor details and pins"
+                                auto-rotate 
+                                camera-controls
+                                camera-orbit="0deg 75deg 105%"
+                                interaction-prompt="none"
+                                loading="eager">
+                            </model-viewer>
+                        </div>
+                        <div class="model-info">
+                            <h3 class="model-label">CPU</h3>
+                            <p class="model-description">Central Processing Unit - executes instructions and processes data in a computer.</p>
+                            <a class="btn btn-primary" href="lp2.html">
+                                <i class="fas fa-info-circle"></i> View Details
+                            </a>
+                        </div>
+                    </article>
+                    
+                    <article class="model-card" role="listitem" aria-label="GPU 3D model">
+                        <div class="model-viewer-container">
+                            <model-viewer 
+                                src="nvidia_geforce_rtx_3090_-_gpu.glb" 
+                                alt="3D model of a GPU showing graphics card components and cooling"
+                                auto-rotate 
+                                camera-controls
+                                camera-orbit="0deg 75deg 105%"
+                                interaction-prompt="none"
+                                loading="eager">
+                            </model-viewer>
+                        </div>
+                        <div class="model-info">
+                            <h3 class="model-label">GPU</h3>
+                            <p class="model-description">Graphics Processing Unit - renders images, videos, and animations for display.</p>
+                            <a class="btn btn-primary" href="lp.html">
+                                <i class="fas fa-info-circle"></i> View Details
+                            </a>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Footer -->
+        <footer role="contentinfo">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-tools"></i>
+                    <span>BTVTEd-CSS Community</span>
+                </div>
+                <p>Accessible technology education for everyone</p>
+                <div class="copyright">
+                    &copy; 2025 BTVTEd-CSS Community. All Rights Reserved.
+                </div>
+            </div>
+        </footer>
+    </main>
+    
+    <!-- Accessibility Controls -->
+    <div class="accessibility-controls">
+        <button class="accessibility-btn" id="font-increase" title="Increase font size" aria-label="Increase font size">
+            <i class="fas fa-text-height"></i>
+        </button>
+        <button class="accessibility-btn" id="font-decrease" title="Decrease font size" aria-label="Decrease font size">
+            <i class="fas fa-text-width"></i>
+        </button>
+        <button class="accessibility-btn" id="high-contrast" title="Toggle high contrast" aria-label="Toggle high contrast mode">
+            <i class="fas fa-adjust"></i>
+        </button>
     </div>
-    <nav class="menu" id="menu" aria-label="Main menu">
-        <ul>
-            <li><a href="#home">HOME</a></li>
-            <li><a href="features.html" id="feature-link">FEATURES</a></li>
-            <li><a href="#models">MODELS</a></li>
-            <li><a href="about.html">ABOUT</a></li>
-            <li><a href="blog.html">BLOG</a></li>
-        </ul>
-    </nav>
-</div>
-
-<!-- HERO SECTION -->
-<section class="hero" id="home" aria-labelledby="hero-title">
-    <h1 id="hero-title">Welcome to CSS Tools & Equipment Guides</h1>
-    <p>Explore interactive 3D models of computer components and quick guides — now with spoken descriptions for features.</p>
-    <a href="#models" class="cta-btn">Explore 3D Models</a>
-</section>
-
-<!-- FEATURES -->
-<section class="features" id="features" aria-labelledby="features-title">
-    <h2 id="features-title" style="position:absolute;left:-9999px;top:auto;">Features</h2>
-    <article class="feature-card" data-feature-text="Interactive 3D Models. Rotate and zoom to examine components from every angle.">
-        <h3>Interactive 3D Models</h3>
-        <p>Rotate, zoom and inspect realistic 3D models of motherboards, CPUs, and GPUs.</p>
-        <div class="feature-actions">
-            <button class="btn-speak" data-speaking="false" title="Speak feature" aria-pressed="false">🔊 Speak</button>
-            <a class="btn-speak" href="lp3.html" style="background:#111;color:#fff;text-decoration:none;padding:6px 10px;border-radius:8px;">See More</a>
-        </div>
-    </article>
-    <article class="feature-card" data-feature-text="Definitions and guides that explain each part and how it works in a computer system.">
-        <h3>Definitions & Guides</h3>
-        <p>Learn what each part does and how to use or install it safely.</p>
-        <div class="feature-actions">
-            <button class="btn-speak" data-speaking="false" title="Speak feature" aria-pressed="false">🔊 Speak</button>
-            <a class="btn-speak" href="lp2.html" style="background:#111;color:#fff;text-decoration:none;padding:6px 10px;border-radius:8px;">See More</a>
-        </div>
-    </article>
-    <article class="feature-card" data-feature-text="Mobile friendly layouts and tools so you can learn on the go from any device.">
-        <h3>Mobile Friendly</h3>
-        <p>Access guides and models from your phone with a layout optimized for small screens.</p>
-        <div class="feature-actions">
-            <button class="btn-speak" data-speaking="false" title="Speak feature" aria-pressed="false">🔊 Speak</button>
-            <a class="btn-speak" href="lp.html" style="background:#111;color:#fff;text-decoration:none;padding:6px 10px;border-radius:8px;">See More</a>
-        </div>
-    </article>
-</section>
-
-<!-- MODELS -->
-<section class="models-section" id="models" aria-labelledby="models-title">
-    <h2 id="models-title">Explore Components</h2>
-    <div class="model-wrapper" role="list">
-        <div class="model-card" role="listitem" aria-label="Motherboard model">
-            <model-viewer src="rog_strix_x370-f_motherboard.glb" auto-rotate camera-controls alt="Motherboard 3D model"></model-viewer>
-            <div class="model-label">Motherboard</div>
-            <a href="lp3.html" style="display:inline-block;margin-top:8px;text-decoration:none;color:#00e5ff;">See More</a>
-        </div>
-        <div class="model-card" role="listitem" aria-label="CPU model">
-            <model-viewer src="free_intel_cpu.glb" auto-rotate camera-controls alt="CPU 3D model"></model-viewer>
-            <div class="model-label">CPU</div>
-            <a href="lp2.html" style="display:inline-block;margin-top:8px;text-decoration:none;color:#00e5ff;">See More</a>
-        </div>
-        <div class="model-card" role="listitem" aria-label="GPU model">
-            <model-viewer src="nvidia_geforce_rtx_3090_-_gpu.glb" auto-rotate camera-controls alt="GPU 3D model"></model-viewer>
-            <div class="model-label">GPU</div>
-            <a href="lp.html" style="display:inline-block;margin-top:8px;text-decoration:none;color:#00e5ff;">See More</a>
+    
+    <!-- Voice Controls -->
+    <div id="voice-controls">
+        <button id="voice-btn" aria-pressed="false" aria-label="Start voice recognition">
+            <i class="fas fa-microphone"></i>
+        </button>
+        <div id="transcript" role="status" aria-live="polite"></div>
+    </div>
+    
+    <!-- Chat Support -->
+    <div id="chat-container">
+        <button id="chat-button" aria-expanded="false" aria-controls="chat-box" aria-label="Open support chat">
+            <i class="fas fa-comment-dots"></i>
+        </button>
+        <div id="chat-box" role="dialog" aria-labelledby="chat-header" aria-hidden="true">
+            <div id="chat-header">
+                <span><i class="fas fa-headset"></i> Support Chat</span>
+                <button id="chat-close" aria-label="Close chat">✖</button>
+            </div>
+            <div id="chat-messages" role="log" aria-live="polite">
+                <div class="chat-message bot-message">Hello! How can I help you today? You can ask about computer components, 3D models, or accessibility features.</div>
+            </div>
+            <input id="chat-input" type="text" placeholder="Type your message and press Enter..." aria-label="Chat message input" />
         </div>
     </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-    &copy; 2025 BTVTEd-CSS Community. All Rights Reserved.
-</footer>
-
-<!-- CHAT SUPPORT -->
-<div id="chat-container" aria-hidden="false">
-  <div id="chat-button" role="button" tabindex="0" aria-label="Open support chat">💬 Chat</div>
-  <div id="chat-box" role="dialog" aria-label="Support chat window" aria-hidden="true">
-    <div id="chat-header">Support Chat <span id="chat-close" role="button" tabindex="0">✖</span></div>
-    <div id="chat-messages" aria-live="polite"></div>
-    <input type="text" id="chat-input" placeholder="Type a message..." aria-label="Chat input" />
-  </div>
-</div>
-
-<!-- QR MODAL -->
-<div id="qr-modal" role="dialog" aria-hidden="true">
-  <div id="qr-modal-content">
-    <h2 style="color:#00e5ff;">Scan QR Code</h2>
-    <video id="qr-video" autoplay muted playsinline></video>
-    <div id="qr-msg">Initializing camera...</div>
-    <button id="qr-btn-close">Close</button>
-  </div>
-</div>
-
-<script>
-/* ========== EmailJS Init ========== */
-try { if(window.emailjs) emailjs.init("YOUR_EMAILJS_USER_ID"); } catch(e){console.warn('EmailJS init failed:', e);}
-
-/* ========== Mobile menu toggle ========== */
-const hamburger = document.getElementById('hamburger');
-const menu = document.getElementById('menu');
-hamburger.addEventListener('click', () => {
-  menu.classList.toggle('active');  
-  hamburger.classList.toggle('open');
-  hamburger.setAttribute('aria-expanded', hamburger.classList.contains('open')?'true':'false');
-});
-Array.from(menu.querySelectorAll('a')).forEach(link => {
-  link.addEventListener('click', () => {
-    if(menu.classList.contains('active')){
-      menu.classList.remove('active'); hamburger.classList.remove('open'); hamburger.setAttribute('aria-expanded','false');
-    }
-  });
-});
-
-/* ========== Chat open/close ========== */
-const chatButton = document.getElementById('chat-button');
-const chatBox = document.getElementById('chat-box');
-const chatClose = document.getElementById('chat-close');
-const chatInput = document.getElementById('chat-input');
-const chatMessages = document.getElementById('chat-messages');
-
-/* Autofocus chat input on page load */
-window.addEventListener('DOMContentLoaded', () => {
-  chatInput.focus();
-});
-
-chatButton.addEventListener('click', () => {
-  const isVisible = chatBox.style.display === 'flex';
-  chatBox.style.display = isVisible ? 'none' : 'flex';
-  chatBox.setAttribute('aria-hidden', isVisible ? 'true':'false');
-  if(!isVisible){ chatBox.style.flexDirection='column'; chatInput.focus(); }
-});
-chatClose.addEventListener('click',()=>{chatBox.style.display='none'; chatBox.setAttribute('aria-hidden','true');});
-
-chatInput.addEventListener('keypress', function(e){
-  if(e.key==='Enter' && chatInput.value.trim()!==''){
-    const userMsg=document.createElement('div'); userMsg.textContent="You: "+chatInput.value; chatMessages.appendChild(userMsg);
-    if(window.emailjs) emailjs.send("YOUR_SERVICE_ID","YOUR_TEMPLATE_ID",{message:chatInput.value,to_email:"css.demo.web@gmail.com"}).catch(err=>console.warn('Email send failed', err));
-    const reply=document.createElement('div'); reply.textContent="Support: Thank you for your message! We'll get back to you via email."; reply.style.color="#00e5ff"; chatMessages.appendChild(reply);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-    chatInput.value='';
-  }
-});
-
-/* ========== QR Scanner ========== */
-import QrScanner from "https://unpkg.com/qr-scanner@1.4.2/qr-scanner.min.js";
-
-/* ========== QR SCANNER ========== */
-const featureLink = document.getElementById('feature-link');
-const qrModal = document.getElementById('qr-modal');
-const qrVideo = document.getElementById('qr-video');
-const qrMsg = document.getElementById('qr-msg');
-let qrScanner = null;
-const REQUIRED_CODE = "AUTHORIZED_USER";
-
-function openQRModal(){
-  qrModal.style.display='flex';
-  qrModal.setAttribute('aria-hidden','false');
-  qrMsg.style.color='#00e5ff';
-  qrMsg.textContent='Initializing camera...';
-
-  // Destroy previous scanner if exists
-  if(qrScanner){ qrScanner.destroy(); qrScanner=null; }
-
-  // Initialize QR scanner with autofocus
-  qrScanner = new QrScanner(qrVideo, result => {
-    if(!result) return;
-    const scanned = String(result).trim();
-    if(scanned === REQUIRED_CODE){
-      qrMsg.style.color='#bfffcf';
-      qrMsg.textContent='QR accepted — Access granted! Redirecting...';
-      try{ qrScanner.stop(); }catch(e){}
-      setTimeout(()=> closeQRModal(true), 350);
-    } else {
-      qrMsg.style.color='#ffb3b3';
-      qrMsg.textContent='Unauthorized QR. Try again.';
-    }
-  }, {
-    highlightScanRegion: true,       // Highlights the scanning area
-    highlightCodeOutline: true,      // Highlights detected QR code
-    preferredCamera: 'environment'   // Uses back camera on mobile devices
-  });
-
-  // Start scanner
-  qrScanner.start()
-    .then(() => { qrMsg.textContent='Scan the QR code now'; })
-    .catch(err => { 
-      qrMsg.style.color='#ffb3b3'; 
-      qrMsg.textContent='Camera not accessible.'; 
-    });
-}
-
-// Close modal function
-function closeQRModal(success=false){
-  try{ qrScanner && qrScanner.stop(); qrScanner && qrScanner.destroy(); }catch(e){}
-  qrScanner = null;
-  qrModal.style.display='none';
-  qrModal.setAttribute('aria-hidden','true');
-  if(success){ window.location.href='features.html'; }
-}
-
-// Trigger modal and scanner on click
-featureLink.addEventListener('click', e => {
-  e.preventDefault();
-  openQRModal();
-});
-</script>
-
-<!-- Additional EmailJS Script -->
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script type="text/javascript">
-   (function(){
-      emailjs.init({
-        publicKey: "YOUR_PUBLIC_KEY",
-      });
-   })();
-</script>
-
-<!-- Voice Recognition Script -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Insert voice UI elements
-  const voiceBtnMarkup = '<button id="voice-btn" aria-pressed="false" title="Start voice recognition">🎙️ Start Listening</button><div id="transcript" role="status" aria-live="polite"></div>';
-  document.body.insertAdjacentHTML('beforeend', voiceBtnMarkup);
-
-  const voiceBtn = document.getElementById('voice-btn');
-  const transcriptEl = document.getElementById('transcript');
-  const chatInputEl = document.getElementById('chat-input');
-
-  console.log('[Voice] Setup started. Button:', !!voiceBtn, 'Transcript:', !!transcriptEl);
-
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  
-  if (!SpeechRecognition) {
-    console.warn('[Voice] SpeechRecognition not supported');
-    voiceBtn.addEventListener('click', () => {
-      transcriptEl.style.display = 'block';
-      transcriptEl.textContent = 'Voice recognition not supported. Use Chrome or Edge.';
-      setTimeout(() => { transcriptEl.style.display = 'none'; }, 4000);
-    });
-  } else {
-    console.log('[Voice] SpeechRecognition available');
-    const recognizer = new SpeechRecognition();
-    recognizer.continuous = false;
-    recognizer.interimResults = true;
-    recognizer.lang = 'en-US';
-
-    let isListening = false;
-    let finalTranscript = '';
-
-    recognizer.addEventListener('start', () => {
-      console.log('[Voice] Start event fired');
-      isListening = true;
-      finalTranscript = '';
-      voiceBtn.classList.add('listening');
-      voiceBtn.setAttribute('aria-pressed', 'true');
-      voiceBtn.textContent = '🎙️ Listening...';
-      transcriptEl.style.display = 'block';
-      transcriptEl.textContent = 'Listening...';
-    });
-
-    recognizer.addEventListener('result', (event) => {
-      console.log('[Voice] Result event, isFinal:', event.results[event.results.length - 1].isFinal);
-      let interim = '';
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const transcript = event.results[i][0].transcript;
-        if (event.results[i].isFinal) {
-          finalTranscript += transcript + ' ';
-        } else {
-          interim += transcript;
+    
+    <!-- QR Modal -->
+    <div id="qr-modal" role="dialog" aria-modal="true" aria-labelledby="qr-title" aria-hidden="true">
+        <div id="qr-modal-content">
+            <h2 id="qr-title"><i class="fas fa-qrcode"></i> Scan QR Code for Access</h2>
+            <p>Point your camera at the QR code to authenticate and unlock premium features.</p>
+            <video id="qr-video" autoplay muted playsinline></video>
+            <div id="qr-msg" class="qr-scanning">Initializing camera...</div>
+            <div style="margin-top: 20px;">
+                <button id="qr-btn-close" class="btn btn-primary">Close Scanner</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        // =======================
+        // CONFIGURATION
+        // =======================
+        const CONFIG = {
+            EMAILJS_PUBLIC_KEY: "YOUR_PUBLIC_KEY_HERE",
+            EMAILJS_SERVICE: "service_tf8nhla",
+            EMAILJS_TEMPLATE: "_ejs-test-mail-service__",
+            REQUIRED_QR_CODE: "AUTHORIZED_USER",
+            SPEECH_RATE: 0.95,
+            SPEECH_PITCH: 1.0,
+            SPEECH_VOLUME: 1.0
+        };
+        
+        // =======================
+        // STATE MANAGEMENT
+        // =======================
+        const state = {
+            isListening: false,
+            qrScanner: null,
+            speechActive: false,
+            currentSpeaker: null,
+            fontSize: 100,
+            highContrast: false
+        };
+        
+        // =======================
+        // ELEMENT REFERENCES
+        // =======================
+        const elements = {
+            hamburger: document.getElementById('hamburger'),
+            mobileMenu: document.getElementById('mobile-menu'),
+            menuOverlay: document.getElementById('menu-overlay'),
+            chatButton: document.getElementById('chat-button'),
+            chatBox: document.getElementById('chat-box'),
+            chatClose: document.getElementById('chat-close'),
+            chatInput: document.getElementById('chat-input'),
+            chatMessages: document.getElementById('chat-messages'),
+            voiceBtn: document.getElementById('voice-btn'),
+            transcript: document.getElementById('transcript'),
+            qrModal: document.getElementById('qr-modal'),
+            qrVideo: document.getElementById('qr-video'),
+            qrMsg: document.getElementById('qr-msg'),
+            qrClose: document.getElementById('qr-btn-close'),
+            featureLink: document.getElementById('feature-link'),
+            mobileFeatureLink: document.getElementById('mobile-feature-link'),
+            fontIncrease: document.getElementById('font-increase'),
+            fontDecrease: document.getElementById('font-decrease'),
+            highContrastBtn: document.getElementById('high-contrast'),
+            speakButtons: document.querySelectorAll('.btn-speak')
+        };
+        
+        // =======================
+        // INITIALIZATION
+        // =======================
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeEmailJS();
+            setupEventListeners();
+            setupAccessibilityControls();
+            setupSpeechButtons();
+            setupVoiceRecognition();
+            setupQRScanner();
+            unlockAudio();
+            
+            // Focus management for accessibility
+            setTimeout(() => {
+                document.querySelector('.skip-link').focus();
+            }, 100);
+        });
+        
+        // =======================
+        // EMAILJS SETUP
+        // =======================
+        function initializeEmailJS() {
+            if (window.emailjs && CONFIG.EMAILJS_PUBLIC_KEY !== "YOUR_PUBLIC_KEY_HERE") {
+                try {
+                    emailjs.init(CONFIG.EMAILJS_PUBLIC_KEY);
+                    console.log('EmailJS initialized successfully');
+                } catch (error) {
+                    console.warn('EmailJS initialization failed:', error);
+                }
+            }
         }
-      }
-      transcriptEl.textContent = finalTranscript + (interim ? ' (' + interim + ')' : '');
-      if (chatInputEl && finalTranscript.trim()) {
-        chatInputEl.value = finalTranscript.trim();
-      }
-    });
-
-    // Handle voice commands
-    recognizer.addEventListener('end', function handleCommands() {
-      const command = finalTranscript.toLowerCase().trim();
-      console.log('[Voice] Processing command:', command);
-
-      // Helper function for voice feedback
-      function speakFeedback(message) {
-        try {
-          window.speechSynthesis.cancel(); // Clear any previous speech
-          const utterance = new SpeechSynthesisUtterance(message);
-          utterance.rate = 0.95;
-          utterance.volume = 1.0;
-          utterance.pitch = 1.0;
-          console.log('[Voice] Speaking feedback:', message);
-          
-          utterance.onstart = () => console.log('[Voice] Speech started');
-          utterance.onend = () => console.log('[Voice] Speech ended');
-          utterance.onerror = (e) => console.error('[Voice] Speech error:', e);
-          
-          window.speechSynthesis.speak(utterance);
-        } catch (e) {
-          console.error('[Voice] Feedback error:', e);
+        
+        // =======================
+        // EVENT LISTENERS SETUP
+        // =======================
+        function setupEventListeners() {
+            // Mobile menu
+            elements.hamburger.addEventListener('click', toggleMobileMenu);
+            elements.menuOverlay.addEventListener('click', () => toggleMobileMenu(false));
+            
+            // Close mobile menu when clicking links
+            document.querySelectorAll('.mobile-link').forEach(link => {
+                link.addEventListener('click', () => toggleMobileMenu(false));
+            });
+            
+            // Chat system
+            elements.chatButton.addEventListener('click', toggleChat);
+            elements.chatClose.addEventListener('click', () => toggleChat(false));
+            elements.chatInput.addEventListener('keypress', handleChatInput);
+            
+            // QR modal
+            elements.qrClose.addEventListener('click', closeQRModal);
+            elements.featureLink.addEventListener('click', openQRModal);
+            elements.mobileFeatureLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                toggleMobileMenu(false);
+                openQRModal();
+            });
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', handleKeyboardNavigation);
+            
+            // Page visibility
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    stopAllAudio();
+                }
+            });
         }
-      }
-
-      // Navigation commands
-      if (command.includes('home')) {
-        window.location.hash = '#home';
-        transcriptEl.textContent = '✓ Going to home';
-        speakFeedback('Going to home page');
-      } else if (command.includes('feature') || command.includes('features')) {
-        window.location.href = 'features.html';
-        transcriptEl.textContent = '✓ Opening features';
-        speakFeedback('Opening features page');
-      } else if (command.includes('model') || command.includes('explore')) {
-        window.location.hash = '#models';
-        transcriptEl.textContent = '✓ Going to models';
-        speakFeedback('Going to models section');
-      } else if (command.includes('about')) {
-        window.location.href = 'about.html';
-        transcriptEl.textContent = '✓ Opening about';
-        speakFeedback('Opening about page');
-      } else if (command.includes('blog')) {
-        window.location.href = 'blog.html';
-        transcriptEl.textContent = '✓ Opening blog';
-        speakFeedback('Opening blog page');
-      }
-      // Chat commands
-      else if (command.includes('chat') || command.includes('support')) {
-        chatButton.click();
-        transcriptEl.textContent = '✓ Opening chat';
-        speakFeedback('Opening support chat');
-      } else if (command.includes('send') && chatInputEl.value) {
-        chatInput.dispatchEvent(new KeyboardEvent('keypress', { key: 'Enter' }));
-        transcriptEl.textContent = '✓ Message sent';
-        speakFeedback('Message sent successfully');
-      }
-      // Scroll commands
-      else if (command.includes('scroll down')) {
-        window.scrollBy(0, 300);
-        transcriptEl.textContent = '✓ Scrolling down';
-        speakFeedback('Scrolling down');
-      } else if (command.includes('scroll up')) {
-        window.scrollBy(0, -300);
-        transcriptEl.textContent = '✓ Scrolling up';
-        speakFeedback('Scrolling up');
-      } else if (command.includes('scroll') && command.includes('top')) {
-        window.scrollTo(0, 0);
-        transcriptEl.textContent = '✓ Scrolling to top';
-        speakFeedback('Scrolling to top');
-      }
-      // Info commands
-      else if (command.includes('refresh') || command.includes('reload')) {
-        speakFeedback('Refreshing page');
-        setTimeout(() => location.reload(), 500);
-        transcriptEl.textContent = '✓ Refreshing page';
-      } else if (finalTranscript.trim() && !command.includes('error')) {
-        transcriptEl.textContent = '✓ Text added to input';
-        speakFeedback('Text added to chat input');
-      }
-      
-      // Reset and hide transcript
-      isListening = false;
-      voiceBtn.classList.remove('listening');
-      voiceBtn.setAttribute('aria-pressed', 'false');
-      voiceBtn.textContent = '🎙️ Listening Enabled (Auto)';
-      setTimeout(() => { transcriptEl.style.display = 'none'; }, 2500);
-    });
-
-    recognizer.addEventListener('error', (event) => {
-      console.error('[Voice] Error:', event.error);
-      transcriptEl.style.display = 'block';
-      transcriptEl.textContent = 'Error: ' + event.error;
-      setTimeout(() => { transcriptEl.style.display = 'none'; }, 3000);
-    });
-
-    // Auto-start voice recognition when page loads (for accessibility)
-    function autoStartVoiceRecognition() {
-      console.log('[Voice] Auto-starting recognition for accessibility');
-      if (!isListening) {
-        finalTranscript = '';
-        try {
-          recognizer.start();
-          // Speak notification that listening has started
-          setTimeout(() => {
-            const utterance = new SpeechSynthesisUtterance('Voice recognition started. You can now speak your commands.');
-            utterance.rate = 0.9;
-            utterance.volume = 1.0;
-            utterance.pitch = 1.0;
-            console.log('[Voice] Speaking: Voice recognition started');
-            window.speechSynthesis.cancel(); // Cancel any pending speech
+        
+        // =======================
+        // MOBILE MENU
+        // =======================
+        function toggleMobileMenu(forceState) {
+            const isOpen = forceState !== undefined ? forceState : !elements.mobileMenu.classList.contains('active');
+            
+            elements.mobileMenu.classList.toggle('active', isOpen);
+            elements.mobileMenu.setAttribute('aria-hidden', !isOpen);
+            elements.menuOverlay.classList.toggle('active', isOpen);
+            elements.hamburger.classList.toggle('active', isOpen);
+            elements.hamburger.setAttribute('aria-expanded', isOpen);
+            
+            // Toggle body scroll
+            document.body.style.overflow = isOpen ? 'hidden' : '';
+            
+            // Focus management
+            if (isOpen) {
+                elements.mobileMenu.querySelector('a').focus();
+            } else {
+                elements.hamburger.focus();
+            }
+        }
+        
+        // =======================
+        // CHAT SYSTEM
+        // =======================
+        function toggleChat(forceState) {
+            const isOpen = forceState !== undefined ? forceState : !elements.chatBox.classList.contains('show');
+            
+            elements.chatBox.classList.toggle('show', isOpen);
+            elements.chatBox.setAttribute('aria-hidden', !isOpen);
+            elements.chatButton.setAttribute('aria-expanded', isOpen);
+            
+            if (isOpen) {
+                elements.chatInput.focus();
+            } else {
+                elements.chatButton.focus();
+            }
+        }
+        
+        function handleChatInput(event) {
+            if (event.key === 'Enter' && elements.chatInput.value.trim()) {
+                const message = elements.chatInput.value.trim();
+                addChatMessage('user', message);
+                elements.chatInput.value = '';
+                
+                // Simulate bot response
+                setTimeout(() => {
+                    const responses = [
+                        "Thanks for your message! Our team will respond within 24 hours.",
+                        "I've received your query about computer components. Check your email for our detailed response.",
+                        "Thank you for reaching out! We're here to help with all your computer hardware questions.",
+                        "Message received. We'll get back to you shortly with information about our 3D models and guides."
+                    ];
+                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                    addChatMessage('bot', randomResponse);
+                    
+                    // Send via EmailJS if configured
+                    if (window.emailjs && CONFIG.EMAILJS_SERVICE) {
+                        sendEmail(message);
+                    }
+                }, 800);
+            }
+        }
+        
+        function addChatMessage(sender, text) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${sender}-message`;
+            messageDiv.textContent = text;
+            messageDiv.setAttribute('role', 'listitem');
+            
+            elements.chatMessages.appendChild(messageDiv);
+            elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
+            
+            // Announce new message for screen readers
+            if (sender === 'bot') {
+                announceForScreenReaders('New support message: ' + text);
+            }
+        }
+        
+        async function sendEmail(message) {
+            try {
+                await emailjs.send("service_a7jpvhh","template_crxmh55", {
+                    message: message,
+                    from_name: 'Website Visitor',
+                    to_email: 'css.demo.web@gmail.com'
+                });
+                console.log('Email sent successfully');
+            } catch (error) {
+                console.warn('Email sending failed:', error);
+            }
+        }
+        
+        // =======================
+        // SPEECH BUTTONS
+        // =======================
+        function setupSpeechButtons() {
+            elements.speakButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const isActive = this.getAttribute('data-speaking') === 'true';
+                    
+                    // Stop any current speech
+                    if (state.currentSpeaker === this) {
+                        stopSpeaking();
+                        this.setAttribute('data-speaking', 'false');
+                        this.setAttribute('aria-pressed', 'false');
+                        this.classList.remove('active');
+                        state.currentSpeaker = null;
+                        return;
+                    }
+                    
+                    // Stop any other speaking button
+                    elements.speakButtons.forEach(btn => {
+                        btn.setAttribute('data-speaking', 'false');
+                        btn.setAttribute('aria-pressed', 'false');
+                        btn.classList.remove('active');
+                    });
+                    
+                    // Get text to speak
+                    const card = this.closest('.feature-card');
+                    const text = card ? card.getAttribute('data-feature-text') : 
+                                this.getAttribute('data-text') || 
+                                this.parentElement.textContent;
+                    
+                    // Speak the text
+                    speakMessage(text);
+                    
+                    // Update button state
+                    this.setAttribute('data-speaking', 'true');
+                    this.setAttribute('aria-pressed', 'true');
+                    this.classList.add('active');
+                    state.currentSpeaker = this;
+                    
+                    // Reset button when speech ends
+                    const checkEnd = setInterval(() => {
+                        if (!window.speechSynthesis.speaking) {
+                            this.setAttribute('data-speaking', 'false');
+                            this.setAttribute('aria-pressed', 'false');
+                            this.classList.remove('active');
+                            state.currentSpeaker = null;
+                            clearInterval(checkEnd);
+                        }
+                    }, 100);
+                });
+            });
+        }
+        
+        // =======================
+        // SPEECH FUNCTIONS
+        // =======================
+        function speakMessage(text, rate = CONFIG.SPEECH_RATE) {
+            stopSpeaking();
+            
+            if (!window.speechSynthesis) {
+                console.warn('Speech synthesis not supported');
+                return;
+            }
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = rate;
+            utterance.pitch = CONFIG.SPEECH_PITCH;
+            utterance.volume = CONFIG.SPEECH_VOLUME;
+            
+            utterance.onstart = () => {
+                state.speechActive = true;
+            };
+            
+            utterance.onend = () => {
+                state.speechActive = false;
+            };
+            
+            utterance.onerror = (event) => {
+                console.warn('Speech synthesis error:', event);
+                state.speechActive = false;
+            };
+            
             window.speechSynthesis.speak(utterance);
-          }, 300);
-        } catch (e) {
-          console.error('[Voice] Auto-start error:', e);
         }
-      }
-    }
-
-    // Start listening automatically after a short delay
-    setTimeout(autoStartVoiceRecognition, 800);
-
-    voiceBtn.addEventListener('click', () => {
-      console.log('[Voice] Button clicked. isListening:', isListening);
-      if (!isListening) {
-        finalTranscript = '';
-        try {
-          recognizer.start();
-        } catch (e) {
-          console.error('[Voice] Start error:', e);
+        
+        function stopSpeaking() {
+            if (window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+                state.speechActive = false;
+                
+                // Reset all speak buttons
+                elements.speakButtons.forEach(btn => {
+                    btn.setAttribute('data-speaking', 'false');
+                    btn.setAttribute('aria-pressed', 'false');
+                    btn.classList.remove('active');
+                });
+                state.currentSpeaker = null;
+            }
         }
-      } else {
-        recognizer.stop();
-      }
-    });
-
-    // Allow voice commands to restart recognition automatically
-    recognizer.addEventListener('end', function autoRestart() {
-      console.log('[Voice] Auto-restarting recognition...');
-      setTimeout(() => {
-        if (!isListening) {
-          finalTranscript = '';
-          try {
-            recognizer.start();
-          } catch (e) {
-            console.error('[Voice] Auto-restart error:', e);
-          }
+        
+        function stopAllAudio() {
+            stopSpeaking();
+            if (state.qrScanner) {
+                closeQRModal();
+            }
         }
-      }, 1000);
-    });
-
-    console.log('[Voice] All setup complete - Auto-start enabled for accessibility');
-  }
-});
-</script>
-
+        
+        // =======================
+        // VOICE RECOGNITION
+        // =======================
+        function setupVoiceRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            
+            if (!SpeechRecognition) {
+                console.warn('Speech recognition not supported in this browser');
+                elements.voiceBtn.disabled = true;
+                elements.voiceBtn.title = 'Voice recognition not supported';
+                return;
+            }
+            
+            const recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+            
+            recognition.onstart = () => {
+                console.log('Voice recognition started');
+                state.isListening = true;
+                elements.voiceBtn.classList.add('listening');
+                elements.voiceBtn.setAttribute('aria-pressed', 'true');
+                elements.transcript.classList.add('show');
+                elements.transcript.textContent = 'Listening...';
+            };
+            
+            recognition.onresult = (event) => {
+                let interimTranscript = '';
+                let finalTranscript = '';
+                
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        finalTranscript += transcript + ' ';
+                    } else {
+                        interimTranscript += transcript;
+                    }
+                }
+                
+                elements.transcript.textContent = finalTranscript || interimTranscript || 'Listening...';
+                
+                // Update chat input if open
+                if (elements.chatBox.classList.contains('show') && finalTranscript) {
+                    elements.chatInput.value = finalTranscript.trim();
+                }
+            };
+            
+            recognition.onend = () => {
+                console.log('Voice recognition ended');
+                handleVoiceCommand();
+                state.isListening = false;
+                elements.voiceBtn.classList.remove('listening');
+                elements.voiceBtn.setAttribute('aria-pressed', 'false');
+                setTimeout(() => elements.transcript.classList.remove('show'), 2000);
+            };
+            
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                elements.transcript.textContent = `Error: ${event.error}`;
+                elements.transcript.classList.add('show');
+                setTimeout(() => elements.transcript.classList.remove('show'), 3000);
+            };
+            
+            // Voice button click handler
+            elements.voiceBtn.addEventListener('click', () => {
+                if (!state.isListening) {
+                    try {
+                        recognition.start();
+                    } catch (error) {
+                        console.error('Failed to start speech recognition:', error);
+                    }
+                } else {
+                    recognition.stop();
+                }
+            });
+            
+            // Auto-start voice recognition for accessibility
+            setTimeout(() => {
+                if (!state.isListening) {
+                    try {
+                        recognition.start();
+                        speakMessage("Voice recognition activated. You can now speak commands.");
+                    } catch (error) {
+                        console.log('Voice auto-start skipped or failed:', error);
+                    }
+                }
+            }, 1500);
+        }
+        
+        function handleVoiceCommand() {
+            const command = elements.transcript.textContent.toLowerCase().trim();
+            
+            // Navigation commands
+            if (command.includes('home')) {
+                window.location.hash = '#home';
+                speakMessage("Going to home section");
+            } else if (command.includes('feature') || command.includes('features')) {
+                window.location.hash = '#features';
+                speakMessage("Going to features section");
+            } else if (command.includes('model') || command.includes('models')) {
+                window.location.hash = '#models';
+                speakMessage("Going to 3D models section");
+            } else if (command.includes('about')) {
+                document.querySelector('#link-about').click();
+                speakMessage("Opening about page");
+            } else if (command.includes('chat') || command.includes('support')) {
+                toggleChat(true);
+                speakMessage("Opening support chat");
+            } else if (command.includes('close chat')) {
+                toggleChat(false);
+                speakMessage("Closing chat");
+            } else if (command.includes('scan') || command.includes('qr')) {
+                openQRModal();
+                speakMessage("Opening QR code scanner");
+            } else if (command.includes('speak') && command.includes('description')) {
+                // Find and trigger the first speak button
+                if (elements.speakButtons.length > 0) {
+                    elements.speakButtons[0].click();
+                }
+            } else if (command.includes('scroll down')) {
+                window.scrollBy(0, 300);
+                speakMessage("Scrolling down");
+            } else if (command.includes('scroll up')) {
+                window.scrollBy(0, -300);
+                speakMessage("Scrolling up");
+            } else if (command.includes('stop') || command.includes('pause')) {
+                stopSpeaking();
+                speakMessage("Stopped speaking");
+            } else if (command.trim()) {
+                // If we have a command but didn't match anything, add to chat
+                if (elements.chatBox.classList.contains('show')) {
+                    elements.chatInput.value = command;
+                    speakMessage("Added to chat input");
+                } else {
+                    speakMessage(`You said: ${command}`);
+                }
+            }
+        }
+        
+        // =======================
+        // QR SCANNER
+        // =======================
+        async function setupQRScanner() {
+            // Load QR scanner dynamically
+            try {
+                // We'll use dynamic import when needed
+                console.log('QR scanner setup complete');
+            } catch (error) {
+                console.warn('QR scanner setup failed:', error);
+            }
+        }
+        
+        async function openQRModal() {
+            elements.qrModal.classList.add('show');
+            elements.qrModal.setAttribute('aria-hidden', 'false');
+            elements.qrMsg.textContent = 'Initializing camera...';
+            elements.qrMsg.className = 'qr-scanning';
+            
+            // Load QR scanner dynamically
+            try {
+                const { default: QrScanner } = await import('https://unpkg.com/qr-scanner@1.4.2/qr-scanner.min.js');
+                
+                // Clean up previous scanner
+                if (state.qrScanner) {
+                    await state.qrScanner.destroy();
+                    state.qrScanner = null;
+                }
+                
+                // Create new scanner
+                state.qrScanner = new QrScanner(elements.qrVideo, result => {
+                    if (result) {
+                        handleQRScanned(result.data);
+                    }
+                }, {
+                    highlightScanRegion: true,
+                    highlightCodeOutline: true,
+                    preferredCamera: 'environment',
+                    maxScansPerSecond: 2
+                });
+                
+                await state.qrScanner.start();
+                elements.qrMsg.textContent = 'Scan QR code now';
+            } catch (error) {
+                console.error('QR scanner error:', error);
+                elements.qrMsg.textContent = 'Camera access failed. Please check permissions.';
+                elements.qrMsg.className = 'qr-error';
+            }
+        }
+        
+        function handleQRScanned(data) {
+            const scannedCode = data.trim();
+            
+            if (scannedCode === CONFIG.REQUIRED_QR_CODE) {
+                elements.qrMsg.textContent = '✅ Access granted! Redirecting...';
+                elements.qrMsg.className = 'qr-success';
+                
+                setTimeout(() => {
+                    closeQRModal();
+                    speakMessage("Access granted. Welcome to premium features.");
+                    // Redirect or show premium content
+                    window.location.href = 'features.html';
+                }, 1500);
+            } else {
+                elements.qrMsg.textContent = '❌ Invalid QR code. Try again.';
+                elements.qrMsg.className = 'qr-error';
+            }
+        }
+        
+        function closeQRModal() {
+            if (state.qrScanner) {
+                state.qrScanner.stop();
+                state.qrScanner.destroy();
+                state.qrScanner = null;
+            }
+            
+            elements.qrModal.classList.remove('show');
+            elements.qrModal.setAttribute('aria-hidden', 'true');
+        }
+        
+        // =======================
+        // ACCESSIBILITY CONTROLS
+        // =======================
+        function setupAccessibilityControls() {
+            // Font size controls
+            elements.fontIncrease.addEventListener('click', () => {
+                state.fontSize = Math.min(state.fontSize + 10, 150);
+                document.body.style.fontSize = state.fontSize + '%';
+                speakMessage(`Font size increased to ${state.fontSize} percent`);
+            });
+            
+            elements.fontDecrease.addEventListener('click', () => {
+                state.fontSize = Math.max(state.fontSize - 10, 80);
+                document.body.style.fontSize = state.fontSize + '%';
+                speakMessage(`Font size decreased to ${state.fontSize} percent`);
+            });
+            
+            // High contrast mode
+            elements.highContrastBtn.addEventListener('click', () => {
+                state.highContrast = !state.highContrast;
+                document.body.classList.toggle('high-contrast', state.highContrast);
+                elements.highContrastBtn.classList.toggle('active', state.highContrast);
+                speakMessage(state.highContrast ? 'High contrast mode enabled' : 'High contrast mode disabled');
+            });
+        }
+        
+        // =======================
+        // KEYBOARD NAVIGATION
+        // =======================
+        function handleKeyboardNavigation(event) {
+            // Close modals with Escape
+            if (event.key === 'Escape') {
+                if (elements.chatBox.classList.contains('show')) {
+                    toggleChat(false);
+                }
+                if (elements.qrModal.classList.contains('show')) {
+                    closeQRModal();
+                }
+                if (elements.mobileMenu.classList.contains('active')) {
+                    toggleMobileMenu(false);
+                }
+                stopSpeaking();
+            }
+            
+            // Voice control with Ctrl+Shift+V
+            if (event.ctrlKey && event.shiftKey && event.key === 'V') {
+                event.preventDefault();
+                elements.voiceBtn.click();
+            }
+            
+            // Chat control with Ctrl+Shift+C
+            if (event.ctrlKey && event.shiftKey && event.key === 'C') {
+                event.preventDefault();
+                toggleChat();
+            }
+        }
+        
+        // =======================
+        // UTILITY FUNCTIONS
+        // =======================
+        function announceForScreenReaders(message) {
+            const announcement = document.createElement('div');
+            announcement.setAttribute('aria-live', 'assertive');
+            announcement.setAttribute('aria-atomic', 'true');
+            announcement.className = 'sr-only';
+            announcement.textContent = message;
+            
+            document.body.appendChild(announcement);
+            
+            setTimeout(() => {
+                document.body.removeChild(announcement);
+            }, 1000);
+        }
+        
+        function unlockAudio() {
+            // Create and play a silent audio to unlock audio on mobile
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance('');
+                utterance.volume = 0;
+                window.speechSynthesis.speak(utterance);
+                window.speechSynthesis.cancel();
+            }
+        }
+        
+        // =======================
+        // CLEANUP
+        // =======================
+        window.addEventListener('beforeunload', () => {
+            stopAllAudio();
+            if (state.qrScanner) {
+                closeQRModal();
+            }
+        });
+        
+        // Unlock audio on first user interaction
+        document.addEventListener('click', unlockAudio, { once: true });
+        document.addEventListener('touchstart', unlockAudio, { once: true });
+    </script>
 </body>
 </html>
