@@ -48,7 +48,7 @@ a { text-decoration:none; color:inherit; }
 .hamburger.open span:nth-child(2) { opacity: 0; }
 .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(6px, -6px); }
 
-/* MOBILE MENU DROPDOWN */
+/* MOBILE MENU */
 @media(max-width:768px){
   .hamburger { display: flex; }
   .menu { display: none; width:100%; }
@@ -60,7 +60,7 @@ a { text-decoration:none; color:inherit; }
    ABOUT SECTION
 ======================= */
 #About { background: linear-gradient(120deg, #0f2027, #203a43, #2c5364); padding:80px 20px; color:#fff; }
-#About h1 { text-align:center; color:#00e5ff; margin-bottom:50px; font-size:3rem; }
+#About h1 { text-align:center; color:#00e5ff; margin-bottom:30px; font-size:3rem; }
 
 /* ABOUT CAROUSEL */
 .about-container { display:flex; justify-content:center; flex-wrap:wrap; }
@@ -73,7 +73,7 @@ a { text-decoration:none; color:inherit; }
 .dot { width:12px; height:12px; border-radius:50%; background:#555; cursor:pointer; transition: all 0.4s ease; }
 .dot.active { background:#00e5ff; }
 
-/* CAROUSEL BUTTONS AT BOTTOM */
+/* CAROUSEL BUTTONS */
 .carousel-buttons { display:flex; justify-content:space-between; margin-top:15px; }
 .side-btn { padding: 12px 18px; font-size:1.5rem; border-radius:50%; background:#00e5ff; color:#fff; border:none; cursor:pointer; transition: transform 0.3s ease; }
 .side-btn:hover { transform: scale(1.2); }
@@ -121,7 +121,18 @@ a { text-decoration:none; color:inherit; }
 
 <!-- ABOUT SECTION -->
 <section id="About">
-  <h1>ABOUT US</h1>
+  <h1>Meet the Team</h1>
+
+  <!-- TEAM ACKNOWLEDGMENT -->
+  <p style="text-align:center; max-width:800px; margin:0 auto 40px auto; font-size:1rem; color:#e0e0e0; font-style:italic;">
+    "I’d like to acknowledge my friends for their valuable contribution—helping with the design, 
+    guiding me on what to do, and supporting me throughout the process. I also want to recognize 
+    the entire team behind the creation of this website. Each member contributed their skills, ideas, 
+    and dedication from planning and design to development and refinement. Your teamwork, creativity, 
+    and hard work made this project possible and I’m truly beyond grateful for everyone’s effort".
+</p>
+
+
   <!-- TEAM CAROUSEL -->
   <div class="about-container">
     <div class="about-content">
@@ -131,7 +142,8 @@ a { text-decoration:none; color:inherit; }
         <p id="member-desc"></p>
       </div>
       <div id="indicator-dots"></div>
-      <!-- Buttons at bottom -->
+
+      <!-- Buttons -->
       <div class="carousel-buttons">
         <button class="side-btn left-btn" onclick="prevMember()">◀</button>
         <button class="side-btn right-btn" onclick="nextMember()">▶</button>
@@ -164,11 +176,13 @@ a { text-decoration:none; color:inherit; }
 <script>
 // TEAM CAROUSEL
 const teamMembers = [
-  { name: "Andre - Lead Developer", img: "test1.jpg", desc: "Handled the main development of the website and implemented interactive features." },
-  { name: "Khent Harvey - UI/UX Designer", img: "test3.jpg", desc: "Designed the user interface, ensuring a clean layout and responsive design." },
-  { name: "BaiGPT - Content Creator", img: "test4.jpg", desc: "Assists with debugging code and ensures smooth performance." },
-  { name: "Clarence - Documentation Specialist", img: "test2.jpg", desc: "Generates and refines documentation and guides." }
+  { name: "Andre - Lead Developer", img: "test1.jpg", desc: "Handled the primary development of the website, overseeing the full build process from structure to deployment, and implemented a range of interactive features designed to enhance user experience, improve accessibility, and ensure smooth, responsive functionality across all devices." },
+  { name: "Khent Harvey - UI/UX Designer", img: "test3.jpg", desc: "Designed the user interface by creating a clean, intuitive layout and applying responsive design principles to ensure seamless usability and visual consistency across various screen sizes and devices." },
+  { name: "Zyril James - Lead Documentation Specialist", img: "test4.JPEG", desc: "A natural communicator who loves turning complex ideas into simple, enjoyable conversations. With a warm stage presence and a genuine passion for sharing knowledge, Bon creates an experience that is both informative and engaging for all audiences." },
+  { name: "Jhon Jave - Documentation Specialist", img: "test2.jpeg", desc: "is a dedicated presenter known for delivering clear, engaging, and insightful discussions on a wide range of topics. With a strong passion for communication and audience connection, Jiboy brings energy, clarity, and professionalism to every presentation." },
+  { name: "C-Jhay - Debug Specialist", img: "test7.jpg", desc: "is a skilled debug specialist renowned for his sharp attention to detail and ability to identify, analyze, and resolve complex issues with precision. His problem-solving mindset and technical expertise make him an essential part of the development process, ensuring smooth performance and reliable outcomes in every project." }
 ];
+
 let currentIndex = 0;
 const memberText = document.getElementById("member-text");
 const memberImg = document.getElementById("member-img");
@@ -176,7 +190,6 @@ const memberDesc = document.getElementById("member-desc");
 const memberWrapper = document.getElementById("member-wrapper");
 const indicatorDots = document.getElementById("indicator-dots");
 
-// Create dots
 teamMembers.forEach((_, i)=>{
   const dot = document.createElement("div");
   dot.classList.add("dot");
@@ -185,7 +198,7 @@ teamMembers.forEach((_, i)=>{
 });
 
 function updateDots(){ document.querySelectorAll(".dot").forEach((dot,i)=>dot.classList.toggle("active",i===currentIndex)); }
-function showMember(index,direction=1){
+function showMember(index, direction=1){
   memberWrapper.style.transition="none";
   memberWrapper.style.transform=`translateX(${100*direction}%)`;
   memberWrapper.style.opacity=0;
@@ -199,21 +212,25 @@ function showMember(index,direction=1){
     updateDots();
   },50);
 }
-function prevMember(){ currentIndex = currentIndex-1<0?teamMembers.length-1:currentIndex-1; showMember(currentIndex,-1); resetAutoSlide(); }
-function nextMember(){ currentIndex = currentIndex+1>=teamMembers.length?0:currentIndex+1; showMember(currentIndex,1); resetAutoSlide(); }
+function prevMember(){ currentIndex = currentIndex-1<0 ? teamMembers.length-1 : currentIndex-1; showMember(currentIndex,-1); resetAutoSlide(); }
+function nextMember(){ currentIndex = currentIndex+1>=teamMembers.length ? 0 : currentIndex+1; showMember(currentIndex,1); resetAutoSlide(); }
+
 let autoSlideInterval = setInterval(()=>nextMember(),5000);
 function resetAutoSlide(){ clearInterval(autoSlideInterval); autoSlideInterval = setInterval(()=>nextMember(),5000); }
+
 showMember(currentIndex);
 
-// HAMBURGER MENU
+// HAMBURGER
 document.addEventListener('DOMContentLoaded', ()=>{
   const hamburger = document.getElementById('hamburger');
   const menu = document.getElementById('menu');
+
   hamburger.addEventListener('click', e=>{
     e.stopPropagation();
     menu.classList.toggle('active');
     hamburger.classList.toggle('open');
   });
+
   document.addEventListener('click', e=>{
     if(!menu.contains(e.target) && !hamburger.contains(e.target)){
       menu.classList.remove('active');
@@ -222,5 +239,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
 });
 </script>
+
 </body>
 </html>
