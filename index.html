@@ -146,6 +146,24 @@
             outline: 2px solid var(--text-dark);
         }
         
+        .whats-new-badge {
+            position: relative;
+            background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
+            color: var(--text-dark);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            animation: pulse 2s infinite;
+            margin-left: 8px;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
         /* Hamburger Button */
         .hamburger {
             width: 36px;
@@ -214,6 +232,7 @@
             font-weight: 600;
             font-size: 1.1rem;
             transition: var(--transition);
+            position: relative;
         }
         
         .mobile-menu a:hover,
@@ -309,6 +328,103 @@
         
         .cta-btn:focus {
             outline: 3px solid var(--accent-color);
+        }
+        
+        /* =======================
+           WHAT'S NEW SECTION
+        ======================= */
+        .whats-new {
+            padding: 80px 20px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: var(--text-light);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .whats-new::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, var(--primary-color) 0%, transparent 70%);
+            opacity: 0.1;
+            border-radius: 50%;
+        }
+        
+        .whats-new-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .whats-new-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+            margin-top: 40px;
+        }
+        
+        .event-highlight {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: var(--shadow-heavy);
+        }
+        
+        .event-date {
+            display: inline-block;
+            background: var(--primary-color);
+            color: var(--text-dark);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+        
+        .event-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        
+        .event-description {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 25px;
+            color: #e0e0ff;
+        }
+        
+        .event-images {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .event-image {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .event-image:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+        }
+        
+        .whats-new-cta {
+            text-align: center;
+            margin-top: 40px;
         }
         
         /* =======================
@@ -865,6 +981,11 @@
             .models-grid {
                 grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             }
+            
+            .whats-new-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
         }
         
         @media (max-width: 768px) {
@@ -909,6 +1030,14 @@
                 bottom: 10px;
                 left: 10px;
             }
+            
+            .event-images {
+                grid-template-columns: 1fr;
+            }
+            
+            .event-image {
+                height: 180px;
+            }
         }
         
         @media (max-width: 480px) {
@@ -931,6 +1060,14 @@
             #qr-video {
                 width: 250px;
                 height: 250px;
+            }
+            
+            .event-title {
+                font-size: 1.6rem;
+            }
+            
+            .event-highlight {
+                padding: 20px;
             }
         }
         
@@ -973,11 +1110,17 @@
         <!-- Desktop Navigation -->
         <nav class="desktop-menu" role="navigation" aria-label="Main navigation">
             <ul>
-                <li><a href="#home" id="link-home"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="index.html" id="link-home"><i class="fas fa-home"></i> Home</a></li>
                 <li><a href="features.html" id="link-features"><i class="fas fa-star"></i> Features</a></li>
                 <li><a href="#models" id="link-models"><i class="fas fa-cube"></i> Models</a></li>
                 <li><a href="about.html" id="link-about"><i class="fas fa-info-circle"></i> About</a></li>
                 <li><a href="#" id="feature-link"><i class="fas fa-qrcode"></i> QR Access</a></li>
+                <li>
+                    <a href="#whats-new" id="link-whats-new">
+                        <i class="fas fa-bullhorn"></i> What's New
+                        <span class="whats-new-badge">NEW</span>
+                    </a>
+                </li>
             </ul>
         </nav>
         
@@ -993,11 +1136,15 @@
         
         <!-- Mobile Menu -->
         <nav class="mobile-menu" id="mobile-menu" role="navigation" aria-label="Mobile navigation" aria-hidden="true">
-            <a href="#home" class="mobile-link"><i class="fas fa-home"></i> Home</a>
+            <a href="index.html" class="mobile-link"><i class="fas fa-home"></i> Home</a>
             <a href="features.html" class="mobile-link"><i class="fas fa-star"></i> Features</a>
             <a href="#models" class="mobile-link"><i class="fas fa-cube"></i> Models</a>
             <a href="about.html" class="mobile-link"><i class="fas fa-info-circle"></i> About</a>
             <a href="#" id="mobile-feature-link" class="mobile-link"><i class="fas fa-qrcode"></i> QR Access</a>
+            <a href="#whats-new" class="mobile-link" id="mobile-whats-new">
+                <i class="fas fa-bullhorn"></i> What's New
+                <span class="whats-new-badge">NEW</span>
+            </a>
         </nav>
     </header>
     
@@ -1008,9 +1155,64 @@
             <div class="hero-content">
                 <h1 id="hero-title">CSS Tools & Equipment Guides</h1>
                 <p>Explore interactive 3D models of computer components with spoken descriptions, accessibility features, and comprehensive learning guides.</p>
-                <button class="cta-btn" onclick="document.querySelector('#models').scrollIntoView({behavior: 'smooth'})">
-                    <i class="fas fa-cube"></i> Explore 3D Models
+                <button class="cta-btn" onclick="document.querySelector('#whats-new').scrollIntoView({behavior: 'smooth'})">
+                    <i class="fas fa-bullhorn"></i> See What's New
                 </button>
+            </div>
+        </section>
+        
+        <!-- What's New Section -->
+        <section class="whats-new" id="whats-new" aria-labelledby="whats-new-title">
+            <div class="whats-new-container">
+                <h2 id="whats-new-title" class="section-title" style="color: var(--primary-color);">What's New at BTVTEd-CSS</h2>
+                <div class="whats-new-content">
+                    <div class="event-highlight">
+                        <div class="event-date">December 3, 2025</div>
+                        <h3 class="event-title">USeP Educator Skills Exhibit</h3>
+                        <p class="event-description">
+                            Join us in celebrating the incredible talents of our educators at the University of Southeastern Philippines! 
+                            We're proud to showcase the technical expertise and innovative teaching methods of CSS educators through 
+                            hands-on demonstrations and interactive exhibits.
+                        </p>
+                        <p class="event-description">
+                          Experience a showcase of diverse talents and skills in coding, featuring beginner-friendly projects and demonstrations from various courses. Our educators will highlight foundational programming concepts and share valuable insights with students and visitors.”
+                        </p>
+                        
+                        <div class="event-images">
+                            <img src="527bd55864dab65b0ed6892539f46b01 (1).JPEG" alt="BTVF30 MORE KNOWLEDGE exhibit showcase" class="event-image">
+                            <img src="0882c0cc1e8bf61034ea2ba25665ee51.JPEG" alt="BTVTED ORF KNOWLEDGE FUN IN CSS1 exhibit" class="event-image">
+                            <img src="527bd55864dab65b0ed6892539f46b01.JPEG" alt="BTVF30 MORE KNOWLEDGE exhibit display" class="event-image">
+                        </div>
+                    </div>
+                    
+                    <div style="color: #e0e0ff;">
+                        <h3 style="font-size: 1.8rem; margin-bottom: 20px; color: var(--primary-color);">Event Highlights</h3>
+                        <ul style="list-style-type: none; padding-left: 0;">
+                            <li style="margin-bottom: 15px; padding-left: 30px; position: relative;">
+                                <i class="fas fa-laptop-code" style="color: var(--primary-color); position: absolute; left: 0;"></i>
+                                <strong>Live Demonstrations:</strong> Showcasing the latest in coding and development techniques
+                            </li>
+                            <li style="margin-bottom: 15px; padding-left: 30px; position: relative;">
+                                <i class="fas fa-users" style="color: var(--primary-color); position: absolute; left: 0;"></i>
+                                <strong>Interactive Sessions:</strong> Hands-on activities for students and visitors
+                            </li>
+                            <li style="margin-bottom: 15px; padding-left: 30px; position: relative;">
+                                <i class="fas fa-trophy" style="color: var(--primary-color); position: absolute; left: 0;"></i>
+                                <strong>Skills Showcase:</strong> Display of technical competencies and teaching innovations
+                            </li>
+                            <li style="margin-bottom: 15px; padding-left: 30px; position: relative;">
+                                <i class="fas fa-network-wired" style="color: var(--primary-color); position: absolute; left: 0;"></i>
+                                <strong>Networking Opportunities:</strong> Connect with future educators and a wide range of industry-related courses.
+                            </li>
+                        </ul>
+                        
+                        <div class="whats-new-cta">
+                            <button class="btn btn-primary" id="view-blog-btn" style="padding: 15px 30px; font-size: 1.1rem;">
+                                <i class="fas fa-newspaper"></i> View Full Event Blog
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
         
@@ -1148,7 +1350,7 @@
                 </div>
                 <p>Accessible technology education for everyone</p>
                 <div class="copyright">
-                    &copy; 2025 BTVTEd-CSS Community. All Rights Reserved.
+                    &copy; 2025 BTVTEd-CSS-1. All Rights Reserved.
                 </div>
             </div>
         </footer>
@@ -1229,7 +1431,9 @@
             speechActive: false,
             currentSpeaker: null,
             fontSize: 100,
-            highContrast: false
+            highContrast: false,
+            lastUtterance: null,
+            voicesLoaded: false
         };
         
         // =======================
@@ -1255,7 +1459,9 @@
             fontIncrease: document.getElementById('font-increase'),
             fontDecrease: document.getElementById('font-decrease'),
             highContrastBtn: document.getElementById('high-contrast'),
-            speakButtons: document.querySelectorAll('.btn-speak')
+            speakButtons: document.querySelectorAll('.btn-speak'),
+            viewBlogBtn: document.getElementById('view-blog-btn'),
+            mobileWhatsNewLink: document.getElementById('mobile-whats-new')
         };
         
         // =======================
@@ -1269,6 +1475,7 @@
             setupVoiceRecognition();
             setupQRScanner();
             unlockAudio();
+            warmUpVoices(); // Preload voices to reduce first-play lag
             
             // Focus management for accessibility
             setTimeout(() => {
@@ -1315,6 +1522,11 @@
                 e.preventDefault();
                 toggleMobileMenu(false);
                 openQRModal();
+            });
+            
+            // Blog redirection
+            elements.viewBlogBtn.addEventListener('click', () => {
+                window.location.href = 'blog.html';
             });
             
             // Keyboard navigation
@@ -1427,103 +1639,141 @@
         function setupSpeechButtons() {
             elements.speakButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    const isActive = this.getAttribute('data-speaking') === 'true';
-                    
-                    // Stop any current speech
-                    if (state.currentSpeaker === this) {
-                        stopSpeaking();
-                        this.setAttribute('data-speaking', 'false');
-                        this.setAttribute('aria-pressed', 'false');
-                        this.classList.remove('active');
-                        state.currentSpeaker = null;
-                        return;
-                    }
-                    
-                    // Stop any other speaking button
-                    elements.speakButtons.forEach(btn => {
-                        btn.setAttribute('data-speaking', 'false');
-                        btn.setAttribute('aria-pressed', 'false');
-                        btn.classList.remove('active');
-                    });
-                    
-                    // Get text to speak
                     const card = this.closest('.feature-card');
                     const text = card ? card.getAttribute('data-feature-text') : 
                                 this.getAttribute('data-text') || 
                                 this.parentElement.textContent;
                     
-                    // Speak the text
-                    speakMessage(text);
+                    // If this button is already the current speaker -> stop
+                    if (state.currentSpeaker === this) {
+                        stopSpeaking();
+                        return;
+                    }
                     
-                    // Update button state
-                    this.setAttribute('data-speaking', 'true');
-                    this.setAttribute('aria-pressed', 'true');
-                    this.classList.add('active');
-                    state.currentSpeaker = this;
-                    
-                    // Reset button when speech ends
-                    const checkEnd = setInterval(() => {
-                        if (!window.speechSynthesis.speaking) {
-                            this.setAttribute('data-speaking', 'false');
-                            this.setAttribute('aria-pressed', 'false');
-                            this.classList.remove('active');
-                            state.currentSpeaker = null;
-                            clearInterval(checkEnd);
-                        }
-                    }, 100);
+                    // Speak using improved function (it will stop previous utterances)
+                    speakMessage(text, this);
                 });
             });
         }
         
         // =======================
-        // SPEECH FUNCTIONS
+        // SPEECH FUNCTIONS (IMPROVED)
         // =======================
-        function speakMessage(text, rate = CONFIG.SPEECH_RATE) {
-            stopSpeaking();
-            
+        function speakMessage(text, button = null, rate = CONFIG.SPEECH_RATE) {
             if (!window.speechSynthesis) {
                 console.warn('Speech synthesis not supported');
+                // If not supported, add quick visual feedback
+                if (button) {
+                    flashButton(button);
+                }
                 return;
             }
             
+            // Stop any currently playing utterance (prevents overlap)
+            stopSpeaking(false); // false = don't reset UI redundantly here (we'll set UI when onstart)
+            
+            // Create utterance
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.rate = rate;
             utterance.pitch = CONFIG.SPEECH_PITCH;
             utterance.volume = CONFIG.SPEECH_VOLUME;
             
+            // Attach events to manage UI state exactly when audio starts/ends
             utterance.onstart = () => {
                 state.speechActive = true;
+                state.currentSpeaker = button;
+                state.lastUtterance = utterance;
+                
+                if (button) {
+                    button.setAttribute('data-speaking', 'true');
+                    button.setAttribute('aria-pressed', 'true');
+                    button.classList.add('active');
+                }
             };
             
             utterance.onend = () => {
                 state.speechActive = false;
+                // Only clear UI if this utterance is still the last utterance fired
+                if (state.lastUtterance === utterance) {
+                    if (button) {
+                        button.setAttribute('data-speaking', 'false');
+                        button.setAttribute('aria-pressed', 'false');
+                        button.classList.remove('active');
+                    } else if (state.currentSpeaker) {
+                        // fallback - clear any currentSpeaker
+                        state.currentSpeaker.setAttribute('data-speaking', 'false');
+                        state.currentSpeaker.setAttribute('aria-pressed', 'false');
+                        state.currentSpeaker.classList.remove('active');
+                    }
+                    state.currentSpeaker = null;
+                    state.lastUtterance = null;
+                }
             };
             
-            utterance.onerror = (event) => {
-                console.warn('Speech synthesis error:', event);
+            utterance.onerror = (e) => {
+                console.warn('Speech synthesis error:', e);
                 state.speechActive = false;
+                if (button) {
+                    button.setAttribute('data-speaking', 'false');
+                    button.setAttribute('aria-pressed', 'false');
+                    button.classList.remove('active');
+                }
+                state.currentSpeaker = null;
+                state.lastUtterance = null;
             };
             
-            window.speechSynthesis.speak(utterance);
+            // Speak
+            try {
+                window.speechSynthesis.speak(utterance);
+            } catch (err) {
+                console.error('Failed to speak utterance:', err);
+                // Ensure UI cleaned
+                if (button) {
+                    button.setAttribute('data-speaking', 'false');
+                    button.setAttribute('aria-pressed', 'false');
+                    button.classList.remove('active');
+                }
+                state.currentSpeaker = null;
+                state.lastUtterance = null;
+            }
         }
         
-        function stopSpeaking() {
-            if (window.speechSynthesis) {
-                window.speechSynthesis.cancel();
-                state.speechActive = false;
-                
-                // Reset all speak buttons
+        // stopSpeaking(forceReset = true)
+        // forceReset: when true, also forcibly resets any speak button UI immediately.
+        function stopSpeaking(forceReset = true) {
+            if (window.speechSynthesis && window.speechSynthesis.speaking) {
+                try {
+                    window.speechSynthesis.cancel();
+                } catch (err) {
+                    console.warn('Error cancelling speechSynthesis:', err);
+                }
+            }
+            state.speechActive = false;
+            state.lastUtterance = null;
+            
+            if (forceReset) {
+                // Reset UI for all speak buttons
                 elements.speakButtons.forEach(btn => {
                     btn.setAttribute('data-speaking', 'false');
                     btn.setAttribute('aria-pressed', 'false');
                     btn.classList.remove('active');
                 });
                 state.currentSpeaker = null;
+            } else {
+                // If not forcing a full UI reset, only clear currentSpeaker reference;
+                // UI will be set by the new utterance's onstart (avoids flicker)
+                state.currentSpeaker = null;
             }
         }
         
+        // Small visual flash for devices without TTS support
+        function flashButton(btn) {
+            btn.classList.add('active');
+            setTimeout(() => btn.classList.remove('active'), 600);
+        }
+        
         function stopAllAudio() {
-            stopSpeaking();
+            stopSpeaking(true);
             if (state.qrScanner) {
                 closeQRModal();
             }
@@ -1635,6 +1885,12 @@
             } else if (command.includes('about')) {
                 document.querySelector('#link-about').click();
                 speakMessage("Opening about page");
+            } else if (command.includes('what\'s new') || command.includes('whats new') || command.includes('news')) {
+                window.location.hash = '#whats-new';
+                speakMessage("Going to what's new section");
+            } else if (command.includes('blog') || command.includes('event')) {
+                elements.viewBlogBtn.click();
+                speakMessage("Opening event blog");
             } else if (command.includes('chat') || command.includes('support')) {
                 toggleChat(true);
                 speakMessage("Opening support chat");
@@ -1833,6 +2089,37 @@
             }
         }
         
+        // Warm up voices to reduce first-play delay (best-effort)
+        function warmUpVoices() {
+            if (!('speechSynthesis' in window)) return;
+            
+            function _loadVoices() {
+                const voices = window.speechSynthesis.getVoices();
+                if (voices.length > 0) {
+                    state.voicesLoaded = true;
+                    // Make a very short, silent utterance to warm audio
+                    try {
+                        const silent = new SpeechSynthesisUtterance(' ');
+                        silent.volume = 0;
+                        silent.rate = 1;
+                        window.speechSynthesis.speak(silent);
+                        window.speechSynthesis.cancel();
+                    } catch (e) {
+                        // silent warmup not critical
+                    }
+                }
+            }
+            
+            _loadVoices();
+            window.speechSynthesis.onvoiceschanged = () => {
+                _loadVoices();
+            };
+            
+            // Also try again after a short delay (some browsers are slow)
+            setTimeout(_loadVoices, 800);
+            setTimeout(_loadVoices, 1500);
+        }
+        
         // =======================
         // CLEANUP
         // =======================
@@ -1849,5 +2136,3 @@
     </script>
 </body>
 </html>
-
-
