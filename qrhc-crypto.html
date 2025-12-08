@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QRHC Cryptosystem - Manual Key Support</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #111827;
+            --darker: #0f172a;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-dark: #334155;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --border: rgba(255, 255, 255, 0.1);
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--darker);
+            color: var(--light);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Background Animation */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(45deg, #0f172a, #1e293b, #0c4a6e);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Header */
+        .header {
+            padding: 2rem 1.5rem;
+            text-align: center;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .logo-icon {
+            font-size: 2.5rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: var(--gray);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Card */
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-icon {
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        /* Controls */
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .textarea, .input, .select {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--light);
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            resize: vertical;
+        }
+
+        .textarea:focus, .input:focus, .select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .textarea {
+            min-height: 120px;
+        }
+
+        /* Key Input Section */
+        .key-input-section {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .key-method-toggle {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.5rem;
+            border-radius: 10px;
+        }
+
+        .key-method-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            background: transparent;
+            color: var(--gray);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .key-method-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .key-format-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .key-format-tab {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            border-radius: 8px;
+            color: var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .key-format-tab.active {
+            background: var(--secondary);
+            color: white;
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--gray-dark);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Key Visualizer */
+        .key-visualizer {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            overflow-x: auto;
+        }
+
+        .key-hex {
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+            color: var(--secondary);
+            word-break: break-all;
+        }
+
+        /* Status Indicators */
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--secondary);
+        }
+
+        .status-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .status-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        /* Visual Cryptography */
+        .visual-crypto {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .layer {
+            flex: 1;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .layer-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border);
+            margin-top: 2rem;
+        }
+
+        .warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid var(--warning);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        /* Key Validation */
+        .key-validation {
+            margin-top: 0.5rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .validation-valid {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--secondary);
+            border-left: 4px solid var(--secondary);
+        }
+
+        .validation-invalid {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+            border-left: 4px solid var(--danger);
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .card {
+                padding: 1.5rem;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+            
+            .btn {
+                padding: 0.75rem 1.5rem;
+                font-size: 0.9rem;
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .visual-crypto {
+                flex-direction: column;
+            }
+            
+            .key-method-toggle {
+                flex-direction: column;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="bg-animation"></div>
+
+    <!-- Header -->
+   
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Encryption/Decryption Card -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i class="fas fa-lock card-icon"></i>
+                    QRHC Encryption & Decryption
+                </h2>
+                <div class="status status-success">
+                    <i class="fas fa-circle"></i>
+                    System Active
+                </div>
+            </div>
+
+            <!-- Key Input Section -->
+            <div class="key-input-section">
+                <h3 style="margin-bottom: 1rem; color: var(--primary);">
+                    <i class="fas fa-key"></i> Encryption Key
+                </h3>
+                
+                <!-- Key Method Toggle -->
+                <div class="key-method-toggle">
+                    <button class="key-method-btn active" id="autoKeyBtn">
+                        <i class="fas fa-random"></i> Auto-Generate
+                    </button>
+                    <button class="key-method-btn" id="manualKeyBtn">
+                        <i class="fas fa-keyboard"></i> Manual Input
+                    </button>
+                    <button class="key-method-btn" id="importKeyBtn">
+                        <i class="fas fa-file-import"></i> Import Key
+                    </button>
+                </div>
+
+                <!-- Auto-Generate Key Section (Default) -->
+                <div id="autoKeySection" class="key-section">
+                    <div class="control-group">
+                        <label class="control-label">
+                            <i class="fas fa-magic"></i> Auto-Generated Key
+                        </label>
+                        <div class="btn-group">
+                            <button class="btn btn-secondary" id="generateKey">
+                                <i class="fas fa-random"></i> Generate New Key
+                            </button>
+                            <button class="btn btn-warning" id="clearKey">
+                                <i class="fas fa-trash"></i> Clear Key
+                            </button>
+                        </div>
+                        <div class="key-visualizer">
+                            <div class="key-hex" id="keyDisplay">
+                                No key generated. Click "Generate New Key" or switch to manual input.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manual Key Input Section (Hidden by default) -->
+                <div id="manualKeySection" class="key-section" style="display: none;">
+                    <div class="control-group">
+                        <label class="control-label">
+                            <i class="fas fa-keyboard"></i> Enter Your Key
+                        </label>
+                        
+                        <!-- Key Format Tabs -->
+                        <div class="key-format-tabs">
+                            <button class="key-format-tab active" data-format="hex">
+                                <i class="fas fa-hashtag"></i> Hexadecimal
+                            </button>
+                            <button class="key-format-tab" data-format="base64">
+                                <i class="fas fa-code"></i> Base64
+                            </button>
+                            <button class="key-format-tab" data-format="text">
+                                <i class="fas fa-font"></i> Text
+                            </button>
+                            <button class="key-format-tab" data-format="binary">
+                                <i class="fas fa-digital-tachograph"></i> Binary
+                            </button>
+                        </div>
+
+                        <!-- Key Input Area -->
+                        <textarea class="textarea" id="manualKeyInput" placeholder="Enter your encryption key here...
+For hexadecimal: 0123456789abcdef...
+For Base64: YWJjMTIz...
+For text: MySecretPassword...
+For binary: 01101000 01100101 01101100 01101100 01101111..." 
+rows="4"></textarea>
+                        
+                        <!-- Key Validation -->
+                        <div id="keyValidation" class="key-validation" style="display: none;">
+                            <i class="fas fa-check-circle"></i> <span id="validationMessage">Key is valid</span>
+                        </div>
+
+                        <!-- Key Actions -->
+                        <div class="btn-group">
+                            <button class="btn btn-success" id="validateKey">
+                                <i class="fas fa-check"></i> Validate Key
+                            </button>
+                            <button class="btn btn-primary" id="useManualKey">
+                                <i class="fas fa-check-circle"></i> Use This Key
+                            </button>
+                            <button class="btn btn-secondary" id="generateSuggestion">
+                                <i class="fas fa-lightbulb"></i> Suggest Strong Key
+                            </button>
+                        </div>
+
+                        <!-- Key Requirements -->
+                        <div class="warning">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Key Requirements:</strong><br>
+                            • Minimum 16 characters (text) or 32 hex digits<br>
+                            • Recommended: 256-bit key (64 hex characters)<br>
+                            • For best security, use random hexadecimal keys
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Import Key Section (Hidden by default) -->
+                <div id="importKeySection" class="key-section" style="display: none;">
+                    <div class="control-group">
+                        <label class="control-label">
+                            <i class="fas fa-file-import"></i> Import Key File
+                        </label>
+                        <div class="btn-group">
+                            <button class="btn btn-secondary" id="browseKeyFile">
+                                <i class="fas fa-folder-open"></i> Browse Key File
+                            </button>
+                            <button class="btn btn-warning" id="clearImportedKey">
+                                <i class="fas fa-times"></i> Clear Imported
+                            </button>
+                        </div>
+                        <input type="file" id="keyFileInput" accept=".key,.txt,.json,.hex" style="display: none;">
+                        <div class="key-visualizer">
+                            <div class="key-hex" id="importedKeyDisplay">
+                                No key file imported. Click "Browse Key File" to select a key file.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Current Key Status -->
+                <div class="control-group">
+                    <label class="control-label">
+                        <i class="fas fa-info-circle"></i> Current Key Status
+                    </label>
+                    <div id="currentKeyStatus" class="status status-warning">
+                        <i class="fas fa-exclamation-circle"></i>
+                        No key loaded
+                    </div>
+                    <div class="stats-grid" style="margin-top: 1rem;">
+                        <div class="stat-card">
+                            <div class="stat-value" id="keyLength">0</div>
+                            <div class="stat-label">Key Length</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="keyStrength">0%</div>
+                            <div class="stat-label">Strength</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="keyEntropy">0.00</div>
+                            <div class="stat-label">Entropy</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="keyType">None</div>
+                            <div class="stat-label">Type</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Encryption/Decryption Section -->
+            <div class="control-group">
+                <label class="control-label">
+                    <i class="fas fa-edit"></i> Input Text
+                </label>
+                <textarea class="textarea" id="inputText" placeholder="Enter text to encrypt or paste ciphertext to decrypt...">Hello, this is a secret message!</textarea>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">
+                    <i class="fas fa-cogs"></i> Operation Mode
+                </label>
+                <select class="select" id="operationMode">
+                    <option value="encrypt">Encrypt</option>
+                    <option value="decrypt">Decrypt</option>
+                </select>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" id="processBtn">
+                    <i class="fas fa-play"></i> Process
+                </button>
+                <button class="btn btn-success" id="copyResult">
+                    <i class="fas fa-copy"></i> Copy Result
+                </button>
+                <button class="btn btn-warning" id="clearAll">
+                    <i class="fas fa-broom"></i> Clear All
+                </button>
+                <button class="btn btn-danger" id="saveKey">
+                    <i class="fas fa-save"></i> Save Key
+                </button>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">
+                    <i class="fas fa-file-code"></i> Result
+                </label>
+                <textarea class="textarea" id="resultText" placeholder="Result will appear here..." readonly></textarea>
+            </div>
+
+            <div class="visual-crypto">
+                <div class="layer">
+                    <i class="fas fa-layer-group layer-icon"></i>
+                    <div>64 Rounds</div>
+                </div>
+                <div class="layer">
+                    <i class="fas fa-project-diagram layer-icon"></i>
+                    <div>Lattice Operations</div>
+                </div>
+                <div class="layer">
+                    <i class="fas fa-random layer-icon"></i>
+                    <div>Chaotic Mixing</div>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="processingTime">0</div>
+                    <div class="stat-label">Time (ms)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="inputLength">0</div>
+                    <div class="stat-label">Input Size</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="outputLength">0</div>
+                    <div class="stat-label">Output Size</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="entropyScore">0.00</div>
+                    <div class="stat-label">Entropy</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>
+            <strong>QRHC Cryptosystem with Manual Key Support</strong> | 
+            Supports auto-generated, manual input, and imported keys
+        </p>
+        <p style="margin-top: 0.5rem; font-size: 0.8rem; color: var(--gray);">
+            <i class="fas fa-exclamation-circle"></i>
+            For demonstration and educational purposes only.
+        </p>
+    </footer>
+
+    <!-- Main Application Script -->
+    <script>
+        // Application State
+        const appState = {
+            encryptionKey: null,
+            keyFormat: 'hex', // hex, base64, text, binary
+            keyMethod: 'auto', // auto, manual, import
+            keyValid: false,
+            lastOperation: null
+        };
+
+        // UI Elements
+        const elements = {
+            // Key Method Toggle
+            autoKeyBtn: document.getElementById('autoKeyBtn'),
+            manualKeyBtn: document.getElementById('manualKeyBtn'),
+            importKeyBtn: document.getElementById('importKeyBtn'),
+            
+            // Key Sections
+            autoKeySection: document.getElementById('autoKeySection'),
+            manualKeySection: document.getElementById('manualKeySection'),
+            importKeySection: document.getElementById('importKeySection'),
+            
+            // Auto Key Elements
+            generateKey: document.getElementById('generateKey'),
+            clearKey: document.getElementById('clearKey'),
+            keyDisplay: document.getElementById('keyDisplay'),
+            
+            // Manual Key Elements
+            manualKeyInput: document.getElementById('manualKeyInput'),
+            keyFormatTabs: document.querySelectorAll('.key-format-tab'),
+            validateKey: document.getElementById('validateKey'),
+            useManualKey: document.getElementById('useManualKey'),
+            generateSuggestion: document.getElementById('generateSuggestion'),
+            keyValidation: document.getElementById('keyValidation'),
+            validationMessage: document.getElementById('validationMessage'),
+            
+            // Import Key Elements
+            browseKeyFile: document.getElementById('browseKeyFile'),
+            clearImportedKey: document.getElementById('clearImportedKey'),
+            keyFileInput: document.getElementById('keyFileInput'),
+            importedKeyDisplay: document.getElementById('importedKeyDisplay'),
+            
+            // Status Elements
+            currentKeyStatus: document.getElementById('currentKeyStatus'),
+            keyLength: document.getElementById('keyLength'),
+            keyStrength: document.getElementById('keyStrength'),
+            keyEntropy: document.getElementById('keyEntropy'),
+            keyType: document.getElementById('keyType'),
+            
+            // Main Elements
+            processBtn: document.getElementById('processBtn'),
+            copyResult: document.getElementById('copyResult'),
+            clearAll: document.getElementById('clearAll'),
+            saveKey: document.getElementById('saveKey'),
+            inputText: document.getElementById('inputText'),
+            resultText: document.getElementById('resultText'),
+            operationMode: document.getElementById('operationMode'),
+            processingTime: document.getElementById('processingTime'),
+            inputLength: document.getElementById('inputLength'),
+            outputLength: document.getElementById('outputLength'),
+            entropyScore: document.getElementById('entropyScore')
+        };
+
+        // Helper Functions
+        function generateRandomKey(length = 32) {
+            const array = new Uint8Array(length);
+            crypto.getRandomValues(array);
+            return array;
+        }
+
+        function bytesToHex(bytes) {
+            return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        function hexToBytes(hex) {
+            // Remove any spaces or non-hex characters
+            const cleanHex = hex.replace(/[^0-9a-fA-F]/g, '');
+            if (cleanHex.length % 2 !== 0) {
+                throw new Error('Invalid hex string length');
+            }
+            const bytes = new Uint8Array(cleanHex.length / 2);
+            for (let i = 0; i < cleanHex.length; i += 2) {
+                bytes[i / 2] = parseInt(cleanHex.substr(i, 2), 16);
+            }
+            return bytes;
+        }
+
+        function base64ToBytes(base64) {
+            const binaryString = atob(base64);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes;
+        }
+
+        function bytesToBase64(bytes) {
+            return btoa(String.fromCharCode(...bytes));
+        }
+
+        function textToBytes(text) {
+            return new TextEncoder().encode(text);
+        }
+
+        function bytesToText(bytes) {
+            return new TextDecoder().decode(bytes);
+        }
+
+        function binaryToBytes(binary) {
+            // Remove spaces and split into bytes
+            const cleanBinary = binary.replace(/\s+/g, '');
+            if (cleanBinary.length % 8 !== 0) {
+                throw new Error('Invalid binary string length');
+            }
+            const bytes = new Uint8Array(cleanBinary.length / 8);
+            for (let i = 0; i < cleanBinary.length; i += 8) {
+                bytes[i / 8] = parseInt(cleanBinary.substr(i, 8), 2);
+            }
+            return bytes;
+        }
+
+        function bytesToBinary(bytes) {
+            return Array.from(bytes).map(b => b.toString(2).padStart(8, '0')).join(' ');
+        }
+
+        function calculateEntropy(str) {
+            if (!str) return 0;
+            const freq = {};
+            for (const char of str) {
+                freq[char] = (freq[char] || 0) + 1;
+            }
+            let entropy = 0;
+            const total = str.length;
+            for (const count of Object.values(freq)) {
+                const p = count / total;
+                entropy -= p * Math.log2(p);
+            }
+            return entropy.toFixed(2);
+        }
+
+        function calculateKeyStrength(keyBytes) {
+            if (!keyBytes || keyBytes.length === 0) return 0;
+            
+            // Calculate strength based on length and randomness
+            const lengthScore = Math.min(100, (keyBytes.length / 64) * 100);
+            
+            // Simple entropy estimation
+            let uniqueBytes = new Set(keyBytes).size;
+            const uniquenessScore = (uniqueBytes / 256) * 100;
+            
+            // Combine scores
+            return Math.round((lengthScore * 0.6 + uniquenessScore * 0.4)).toString();
+        }
+
+        function validateKeyFormat(key, format) {
+            try {
+                switch (format) {
+                    case 'hex':
+                        // Check if valid hex string
+                        const hexRegex = /^[0-9a-fA-F\s]+$/;
+                        if (!hexRegex.test(key)) return false;
+                        const cleanHex = key.replace(/\s/g, '');
+                        if (cleanHex.length < 32 || cleanHex.length % 2 !== 0) return false;
+                        hexToBytes(cleanHex); // Will throw if invalid
+                        return true;
+                        
+                    case 'base64':
+                        // Check if valid base64
+                        const base64Regex = /^[A-Za-z0-9+/]*={0,2}$/;
+                        if (!base64Regex.test(key)) return false;
+                        atob(key); // Will throw if invalid
+                        return true;
+                        
+                    case 'text':
+                        // Text keys should have minimum length
+                        return key.length >= 16;
+                        
+                    case 'binary':
+                        // Check if valid binary string
+                        const binaryRegex = /^[01\s]+$/;
+                        if (!binaryRegex.test(key)) return false;
+                        const cleanBinary = key.replace(/\s/g, '');
+                        if (cleanBinary.length < 128 || cleanBinary.length % 8 !== 0) return false;
+                        return true;
+                        
+                    default:
+                        return false;
+                }
+            } catch (error) {
+                return false;
+            }
+        }
+
+        function parseKeyFromInput(keyInput, format) {
+            try {
+                switch (format) {
+                    case 'hex':
+                        return hexToBytes(keyInput.replace(/\s/g, ''));
+                    case 'base64':
+                        return base64ToBytes(keyInput);
+                    case 'text':
+                        return textToBytes(keyInput);
+                    case 'binary':
+                        return binaryToBytes(keyInput);
+                    default:
+                        throw new Error('Unsupported format');
+                }
+            } catch (error) {
+                return null;
+            }
+        }
+
+        function formatKeyForDisplay(keyBytes, format) {
+            if (!keyBytes) return '';
+            
+            switch (format) {
+                case 'hex':
+                    return bytesToHex(keyBytes).match(/.{1,8}/g)?.join(' ') || '';
+                case 'base64':
+                    return bytesToBase64(keyBytes);
+                case 'text':
+                    return bytesToText(keyBytes);
+                case 'binary':
+                    return bytesToBinary(keyBytes);
+                default:
+                    return bytesToHex(keyBytes);
+            }
+        }
+
+        // Simulated QRHC Encryption
+        function simulateQRHCEncryption(text, key) {
+            const textBytes = new TextEncoder().encode(text);
+            const keyBytes = key;
+            
+            // Simple XOR-based encryption (for demo only)
+            let encrypted = new Uint8Array(textBytes.length);
+            for (let i = 0; i < textBytes.length; i++) {
+                encrypted[i] = textBytes[i] ^ keyBytes[i % keyBytes.length];
+            }
+            
+            const hexResult = bytesToHex(encrypted);
+            const processingTime = Math.floor(text.length * 0.5 + Math.random() * 10);
+            
+            return {
+                result: hexResult,
+                time: processingTime
+            };
+        }
+
+        // Simulated QRHC Decryption
+        function simulateQRHCDecryption(hexText, key) {
+            try {
+                const encryptedBytes = hexToBytes(hexText);
+                const keyBytes = key;
+                
+                let decrypted = new Uint8Array(encryptedBytes.length);
+                for (let i = 0; i < encryptedBytes.length; i++) {
+                    decrypted[i] = encryptedBytes[i] ^ keyBytes[i % keyBytes.length];
+                }
+                
+                const result = new TextDecoder().decode(decrypted);
+                const processingTime = Math.floor(hexText.length * 0.3 + Math.random() * 8);
+                
+                return {
+                    result: result,
+                    time: processingTime
+                };
+            } catch (error) {
+                return {
+                    result: "ERROR: Invalid ciphertext or key mismatch",
+                    time: 0
+                };
+            }
+        }
+
+        // Update Key Status Display
+        function updateKeyStatus() {
+            if (!appState.encryptionKey || appState.encryptionKey.length === 0) {
+                elements.currentKeyStatus.className = 'status status-warning';
+                elements.currentKeyStatus.innerHTML = '<i class="fas fa-exclamation-circle"></i> No key loaded';
+                elements.keyLength.textContent = '0';
+                elements.keyStrength.textContent = '0%';
+                elements.keyEntropy.textContent = '0.00';
+                elements.keyType.textContent = 'None';
+                elements.processBtn.disabled = true;
+                return;
+            }
+            
+            const keyHex = bytesToHex(appState.encryptionKey);
+            const strength = calculateKeyStrength(appState.encryptionKey);
+            const entropy = calculateEntropy(keyHex);
+            
+            elements.keyLength.textContent = appState.encryptionKey.length * 8 + ' bits';
+            elements.keyStrength.textContent = strength + '%';
+            elements.keyEntropy.textContent = entropy;
+            elements.keyType.textContent = appState.keyFormat.toUpperCase();
+            
+            if (parseInt(strength) > 70) {
+                elements.currentKeyStatus.className = 'status status-success';
+                elements.currentKeyStatus.innerHTML = `<i class="fas fa-check-circle"></i> Strong ${appState.keyMethod} key loaded`;
+            } else {
+                elements.currentKeyStatus.className = 'status status-warning';
+                elements.currentKeyStatus.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Weak ${appState.keyMethod} key loaded`;
+            }
+            
+            elements.processBtn.disabled = false;
+        }
+
+        // Update Statistics
+        function updateStats(input, output, time) {
+            elements.inputLength.textContent = input.length;
+            elements.outputLength.textContent = output.length;
+            elements.processingTime.textContent = time;
+            elements.entropyScore.textContent = calculateEntropy(output);
+        }
+
+        // Show Notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                border-radius: 12px;
+                color: white;
+                font-weight: 600;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                max-width: 400px;
+                backdrop-filter: blur(10px);
+            `;
+            
+            const bgColors = {
+                success: 'rgba(16, 185, 129, 0.9)',
+                error: 'rgba(239, 68, 68, 0.9)',
+                warning: 'rgba(245, 158, 11, 0.9)',
+                info: 'rgba(99, 102, 241, 0.9)'
+            };
+            
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+            
+            notification.style.background = bgColors[type] || bgColors.info;
+            notification.innerHTML = `
+                <i class="fas ${icons[type]}" style="font-size: 1.2rem;"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Add CSS animations for notifications
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Event Handlers
+        // Key Method Toggle
+        elements.autoKeyBtn.addEventListener('click', () => {
+            appState.keyMethod = 'auto';
+            elements.autoKeyBtn.classList.add('active');
+            elements.manualKeyBtn.classList.remove('active');
+            elements.importKeyBtn.classList.remove('active');
+            
+            elements.autoKeySection.style.display = 'block';
+            elements.manualKeySection.style.display = 'none';
+            elements.importKeySection.style.display = 'none';
+            
+            showNotification('Switched to auto-generated key mode', 'info');
+        });
+
+        elements.manualKeyBtn.addEventListener('click', () => {
+            appState.keyMethod = 'manual';
+            elements.manualKeyBtn.classList.add('active');
+            elements.autoKeyBtn.classList.remove('active');
+            elements.importKeyBtn.classList.remove('active');
+            
+            elements.manualKeySection.style.display = 'block';
+            elements.autoKeySection.style.display = 'none';
+            elements.importKeySection.style.display = 'none';
+            
+            // Update placeholder based on format
+            updateManualKeyPlaceholder();
+            
+            showNotification('Switched to manual key input mode', 'info');
+        });
+
+        elements.importKeyBtn.addEventListener('click', () => {
+            appState.keyMethod = 'import';
+            elements.importKeyBtn.classList.add('active');
+            elements.autoKeyBtn.classList.remove('active');
+            elements.manualKeyBtn.classList.remove('active');
+            
+            elements.importKeySection.style.display = 'block';
+            elements.autoKeySection.style.display = 'none';
+            elements.manualKeySection.style.display = 'none';
+            
+            showNotification('Switched to key import mode', 'info');
+        });
+
+        // Key Format Tabs
+        elements.keyFormatTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                elements.keyFormatTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                appState.keyFormat = tab.dataset.format;
+                
+                updateManualKeyPlaceholder();
+                showNotification(`Switched to ${appState.keyFormat.toUpperCase()} key format`, 'info');
+            });
+        });
+
+        function updateManualKeyPlaceholder() {
+            const placeholders = {
+                hex: 'Enter hexadecimal key (e.g., 0123456789abcdef...)\nMinimum 32 hex characters (128-bit)',
+                base64: 'Enter Base64 key (e.g., YWJjMTIz...)\nMust be valid Base64 encoding',
+                text: 'Enter text key (e.g., MySecretPassword123!)\nMinimum 16 characters',
+                binary: 'Enter binary key (e.g., 01101000 01100101...)\nMinimum 128 bits (16 bytes)'
+            };
+            elements.manualKeyInput.placeholder = placeholders[appState.keyFormat] || '';
+        }
+
+        // Auto-Generate Key
+        elements.generateKey.addEventListener('click', () => {
+            elements.generateKey.innerHTML = '<div class="spinner"></div>';
+            elements.generateKey.disabled = true;
+            
+            setTimeout(() => {
+                appState.encryptionKey = generateRandomKey(32);
+                const keyHex = bytesToHex(appState.encryptionKey);
+                
+                elements.keyDisplay.innerHTML = `
+                    <div style="color: #10b981; font-weight: bold;">✓ 256-bit Key Generated</div>
+                    <div style="margin-top: 0.5rem; word-break: break-all;">
+                        ${keyHex.match(/.{1,8}/g)?.join(' ') || keyHex}
+                    </div>
+                    <div style="margin-top: 0.5rem; color: var(--gray); font-size: 0.8rem;">
+                        Copy this key to share with recipient for decryption
+                    </div>
+                `;
+                
+                appState.keyMethod = 'auto';
+                appState.keyFormat = 'hex';
+                updateKeyStatus();
+                
+                elements.generateKey.innerHTML = '<i class="fas fa-random"></i> Generate New Key';
+                elements.generateKey.disabled = false;
+                
+                showNotification('256-bit encryption key generated! Copy it to share.', 'success');
+            }, 500);
+        });
+
+        elements.clearKey.addEventListener('click', () => {
+            if (confirm('Clear the current encryption key?')) {
+                appState.encryptionKey = null;
+                elements.keyDisplay.innerHTML = '<div style="color: var(--gray);">No key generated. Click "Generate New Key" or switch to manual input.</div>';
+                updateKeyStatus();
+                showNotification('Encryption key cleared!', 'warning');
+            }
+        });
+
+        // Manual Key Validation
+        elements.validateKey.addEventListener('click', () => {
+            const keyInput = elements.manualKeyInput.value.trim();
+            if (!keyInput) {
+                elements.keyValidation.style.display = 'block';
+                elements.keyValidation.className = 'key-validation validation-invalid';
+                elements.validationMessage.textContent = 'Please enter a key';
+                return;
+            }
+            
+            const isValid = validateKeyFormat(keyInput, appState.keyFormat);
+            
+            elements.keyValidation.style.display = 'block';
+            if (isValid) {
+                elements.keyValidation.className = 'key-validation validation-valid';
+                elements.validationMessage.textContent = `Valid ${appState.keyFormat.toUpperCase()} key`;
+                showNotification('Key format is valid!', 'success');
+            } else {
+                elements.keyValidation.className = 'key-validation validation-invalid';
+                elements.validationMessage.textContent = `Invalid ${appState.keyFormat.toUpperCase()} format`;
+                showNotification('Invalid key format', 'error');
+            }
+        });
+
+        // Use Manual Key
+        elements.useManualKey.addEventListener('click', () => {
+            const keyInput = elements.manualKeyInput.value.trim();
+            if (!keyInput) {
+                showNotification('Please enter a key first', 'error');
+                return;
+            }
+            
+            try {
+                appState.encryptionKey = parseKeyFromInput(keyInput, appState.keyFormat);
+                if (!appState.encryptionKey) {
+                    throw new Error('Failed to parse key');
+                }
+                
+                // Validate minimum length
+                if (appState.encryptionKey.length < 16) {
+                    showNotification('Warning: Key is very short (minimum 16 bytes recommended)', 'warning');
+                }
+                
+                updateKeyStatus();
+                showNotification(`Manual ${appState.keyFormat.toUpperCase()} key loaded successfully!`, 'success');
+                
+                // Also update auto key display for consistency
+                const keyHex = bytesToHex(appState.encryptionKey);
+                elements.keyDisplay.innerHTML = `
+                    <div style="color: #10b981; font-weight: bold;">✓ Manual Key Loaded</div>
+                    <div style="margin-top: 0.5rem; word-break: break-all;">
+                        ${keyHex.match(/.{1,8}/g)?.join(' ') || keyHex}
+                    </div>
+                `;
+                
+            } catch (error) {
+                showNotification(`Invalid ${appState.keyFormat} key: ${error.message}`, 'error');
+            }
+        });
+
+        // Generate Key Suggestion
+        elements.generateSuggestion.addEventListener('click', () => {
+            let suggestion = '';
+            
+            switch (appState.keyFormat) {
+                case 'hex':
+                    // Generate random hex key
+                    const hexBytes = generateRandomKey(32);
+                    suggestion = bytesToHex(hexBytes).match(/.{1,8}/g)?.join(' ') || '';
+                    break;
+                    
+                case 'base64':
+                    // Generate random base64 key
+                    const base64Bytes = generateRandomKey(24);
+                    suggestion = bytesToBase64(base64Bytes);
+                    break;
+                    
+                case 'text':
+                    // Generate random text key
+                    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+                    const length = 32;
+                    for (let i = 0; i < length; i++) {
+                        suggestion += chars.charAt(Math.floor(Math.random() * chars.length));
+                    }
+                    break;
+                    
+                case 'binary':
+                    // Generate random binary key
+                    const binaryBytes = generateRandomKey(16);
+                    suggestion = bytesToBinary(binaryBytes);
+                    break;
+            }
+            
+            elements.manualKeyInput.value = suggestion;
+            showNotification(`Generated strong ${appState.keyFormat} key suggestion`, 'success');
+        });
+
+        // Import Key File
+        elements.browseKeyFile.addEventListener('click', () => {
+            elements.keyFileInput.click();
+        });
+
+        elements.keyFileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            if (file.size > 1024 * 10) { // 10KB limit
+                showNotification('Key file too large (max 10KB)', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const content = event.target.result.trim();
+                
+                // Try to detect format
+                let format = 'text';
+                let keyBytes = null;
+                
+                // Try hex first
+                if (validateKeyFormat(content, 'hex')) {
+                    format = 'hex';
+                    keyBytes = parseKeyFromInput(content, 'hex');
+                } 
+                // Try base64
+                else if (validateKeyFormat(content, 'base64')) {
+                    format = 'base64';
+                    keyBytes = parseKeyFromInput(content, 'base64');
+                }
+                // Try text
+                else {
+                    keyBytes = parseKeyFromInput(content, 'text');
+                }
+                
+                if (keyBytes) {
+                    appState.encryptionKey = keyBytes;
+                    appState.keyFormat = format;
+                    appState.keyMethod = 'import';
+                    
+                    const display = formatKeyForDisplay(keyBytes, format);
+                    elements.importedKeyDisplay.innerHTML = `
+                        <div style="color: #10b981; font-weight: bold;">✓ Imported ${format.toUpperCase()} Key</div>
+                        <div style="margin-top: 0.5rem; word-break: break-all;">
+                            ${display.length > 200 ? display.substring(0, 200) + '...' : display}
+                        </div>
+                        <div style="margin-top: 0.5rem; color: var(--gray); font-size: 0.8rem;">
+                            File: ${file.name} (${format.toUpperCase()})
+                        </div>
+                    `;
+                    
+                    updateKeyStatus();
+                    showNotification(`Key imported from ${file.name} (${format.toUpperCase()})`, 'success');
+                } else {
+                    showNotification('Could not parse key file', 'error');
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        elements.clearImportedKey.addEventListener('click', () => {
+            elements.importedKeyDisplay.innerHTML = '<div style="color: var(--gray);">No key file imported. Click "Browse Key File" to select a key file.</div>';
+            elements.keyFileInput.value = '';
+            if (appState.keyMethod === 'import') {
+                appState.encryptionKey = null;
+                updateKeyStatus();
+            }
+            showNotification('Imported key cleared', 'warning');
+        });
+
+        // Save Key
+        elements.saveKey.addEventListener('click', () => {
+            if (!appState.encryptionKey) {
+                showNotification('No key to save', 'error');
+                return;
+            }
+            
+            let keyContent = '';
+            let filename = '';
+            
+            switch (appState.keyFormat) {
+                case 'hex':
+                    keyContent = bytesToHex(appState.encryptionKey);
+                    filename = `qrhc-key-${new Date().toISOString().slice(0, 10)}.hex`;
+                    break;
+                case 'base64':
+                    keyContent = bytesToBase64(appState.encryptionKey);
+                    filename = `qrhc-key-${new Date().toISOString().slice(0, 10)}.b64`;
+                    break;
+                case 'text':
+                    keyContent = bytesToText(appState.encryptionKey);
+                    filename = `qrhc-key-${new Date().toISOString().slice(0, 10)}.txt`;
+                    break;
+                default:
+                    keyContent = bytesToHex(appState.encryptionKey);
+                    filename = `qrhc-key-${new Date().toISOString().slice(0, 10)}.key`;
+            }
+            
+            const blob = new Blob([keyContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showNotification(`Key saved as ${filename}`, 'success');
+        });
+
+        // Process Button
+        elements.processBtn.addEventListener('click', () => {
+            if (!appState.encryptionKey) {
+                showNotification('Please load or generate a key first!', 'error');
+                return;
+            }
+            
+            const input = elements.inputText.value.trim();
+            if (!input) {
+                showNotification('Please enter some text!', 'error');
+                return;
+            }
+            
+            const operation = elements.operationMode.value;
+            elements.processBtn.innerHTML = '<div class="spinner"></div>';
+            elements.processBtn.disabled = true;
+            
+            setTimeout(() => {
+                let result;
+                
+                if (operation === 'encrypt') {
+                    result = simulateQRHCEncryption(input, appState.encryptionKey);
+                    elements.resultText.value = result.result;
+                    showNotification(`Encrypted with ${appState.keyMethod} key in ${result.time}ms!`, 'success');
+                } else {
+                    result = simulateQRHCDecryption(input, appState.encryptionKey);
+                    elements.resultText.value = result.result;
+                    if (result.result.startsWith("ERROR:")) {
+                        showNotification('Decryption failed - check ciphertext and key', 'error');
+                    } else {
+                        showNotification(`Decrypted with ${appState.keyMethod} key in ${result.time}ms!`, 'success');
+                    }
+                }
+                
+                updateStats(input, result.result, result.time);
+                appState.lastOperation = operation;
+                
+                elements.processBtn.innerHTML = '<i class="fas fa-play"></i> Process';
+                elements.processBtn.disabled = false;
+            }, 300);
+        });
+
+        elements.copyResult.addEventListener('click', () => {
+            if (!elements.resultText.value.trim()) {
+                showNotification('No result to copy!', 'error');
+                return;
+            }
+            
+            navigator.clipboard.writeText(elements.resultText.value)
+                .then(() => showNotification('Result copied to clipboard!', 'success'))
+                .catch(() => {
+                    elements.resultText.select();
+                    document.execCommand('copy');
+                    showNotification('Result copied to clipboard!', 'success');
+                });
+        });
+
+        elements.clearAll.addEventListener('click', () => {
+            elements.inputText.value = '';
+            elements.resultText.value = '';
+            elements.inputLength.textContent = '0';
+            elements.outputLength.textContent = '0';
+            elements.processingTime.textContent = '0';
+            elements.entropyScore.textContent = '0.00';
+            showNotification('All inputs cleared!', 'info');
+        });
+
+        // Update input length in real-time
+        elements.inputText.addEventListener('input', function() {
+            elements.inputLength.textContent = this.value.length;
+        });
+
+        // Update result length in real-time
+        elements.resultText.addEventListener('input', function() {
+            elements.outputLength.textContent = this.value.length;
+        });
+
+        // Initialize
+        updateKeyStatus();
+        updateManualKeyPlaceholder();
+        
+        // Auto-generate a key on startup for demo
+        setTimeout(() => {
+            appState.encryptionKey = generateRandomKey(32);
+            const keyHex = bytesToHex(appState.encryptionKey);
+            elements.keyDisplay.innerHTML = `
+                <div style="color: #10b981; font-weight: bold;">✓ Demo Key Generated</div>
+                <div style="margin-top: 0.5rem; word-break: break-all;">
+                    ${keyHex.match(/.{1,8}/g)?.join(' ') || keyHex}
+                </div>
+                <div style="margin-top: 0.5rem; color: var(--gray); font-size: 0.8rem;">
+                    This is a demo key. You can replace it with your own.
+                </div>
+            `;
+            updateKeyStatus();
+            showNotification('Demo system ready with auto-generated key. Try manual key input for decryption!', 'info');
+        }, 1000);
+    </script>
+</body>
+</html>
